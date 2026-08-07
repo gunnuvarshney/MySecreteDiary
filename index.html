@@ -224,15 +224,15 @@
       <p class="muted" style="font-size:13px;">This stays on your account only — no one else can read it.</p>
     </div>
     <label class="field-label">Your name</label>
-    <input type="text" id="in-name" placeholder="What should we call you?">
+    <input type="text" id="in-name" name="diary-name" autocomplete="off" placeholder="What should we call you?">
     <label class="field-label">Password</label>
-    <input type="password" id="in-pass" placeholder="Create a password">
+    <input type="password" id="in-pass" name="diary-new-pass" autocomplete="new-password" placeholder="Create a password">
     <label class="field-label">Confirm password</label>
-    <input type="password" id="in-pass2" placeholder="Type it again">
+    <input type="password" id="in-pass2" name="diary-new-pass2" autocomplete="new-password" placeholder="Type it again">
     <label class="field-label">4-digit PIN (optional, quicker unlock)</label>
-    <input type="text" id="in-pin" maxlength="4" inputmode="numeric" placeholder="e.g. 2408">
+    <input type="text" id="in-pin" name="diary-pin" autocomplete="off" maxlength="4" inputmode="numeric" placeholder="e.g. 2408">
     <label class="field-label">Phone number (used only if you forget your password)</label>
-    <input type="text" id="in-phone" inputmode="tel" placeholder="e.g. 9876543210">
+    <input type="text" id="in-phone" name="diary-phone" autocomplete="off" inputmode="tel" placeholder="e.g. 9876543210">
     <div class="err" id="create-err" style="display:none;"></div>
     <button class="btn btn-primary" onclick="submitCreate()">Continue</button>
   </div>
@@ -260,7 +260,7 @@
       <div class="lock-emoji">🔒</div>
       <div class="handwritten" style="font-size:30px;">Welcome back<span id="lock-name"></span></div>
       <p class="muted" style="font-size:13px; margin-bottom:20px;">Unlock to continue your story</p>
-      <input type="password" id="lock-input" placeholder="Password or PIN" style="text-align:center;">
+      <input type="password" id="lock-input" name="diary-unlock" autocomplete="current-password" placeholder="Password or PIN" style="text-align:center;">
       <div class="err" id="lock-err" style="display:none;"></div>
       <button class="btn btn-primary" onclick="tryUnlock()">Unlock</button>
       <button class="btn btn-ghost" style="margin-top:10px;" id="quick-unlock-btn" onclick="quickUnlock()">✨ Quick Unlock</button>
@@ -276,7 +276,7 @@
         <div class="handwritten" style="font-size:28px;">Verify it's you</div>
         <p class="muted" style="font-size:13px;">Enter the phone number you signed up with.</p>
       </div>
-      <input type="text" id="forgot-phone" inputmode="tel" placeholder="Your phone number" style="text-align:center;">
+      <input type="text" id="forgot-phone" name="diary-forgot-phone" autocomplete="off" inputmode="tel" placeholder="Your phone number" style="text-align:center;">
       <div class="err" id="forgot-err" style="display:none;"></div>
       <button class="btn btn-primary" onclick="verifyForgotPhone()">Verify</button>
       <button class="btn btn-ghost" style="margin-top:10px;" onclick="openScreenRaw('lock')">Back to Unlock</button>
@@ -291,11 +291,11 @@
         <div class="handwritten" style="font-size:28px;">Set a new password</div>
       </div>
       <label class="field-label">New password</label>
-      <input type="password" id="reset-pass">
+      <input type="password" id="reset-pass" name="diary-reset-pass" autocomplete="new-password">
       <label class="field-label">Confirm new password</label>
-      <input type="password" id="reset-pass2">
+      <input type="password" id="reset-pass2" name="diary-reset-pass2" autocomplete="new-password">
       <label class="field-label">New 4-digit PIN (optional)</label>
-      <input type="text" id="reset-pin" maxlength="4" inputmode="numeric">
+      <input type="text" id="reset-pin" name="diary-reset-pin" autocomplete="off" maxlength="4" inputmode="numeric">
       <div class="err" id="reset-err" style="display:none;"></div>
       <button class="btn btn-primary" onclick="submitReset()">Save & Unlock</button>
     </div>
@@ -468,13 +468,13 @@
       <div style="width:42px;"></div>
     </div>
     <label class="field-label">Current password</label>
-    <input type="password" id="cp-old">
+    <input type="password" id="cp-old" name="diary-cp-old" autocomplete="current-password">
     <label class="field-label">New password</label>
-    <input type="password" id="cp-new">
+    <input type="password" id="cp-new" name="diary-cp-new" autocomplete="new-password">
     <label class="field-label">Confirm new password</label>
-    <input type="password" id="cp-new2">
+    <input type="password" id="cp-new2" name="diary-cp-new2" autocomplete="new-password">
     <label class="field-label">New 4-digit PIN (optional)</label>
-    <input type="text" id="cp-pin" maxlength="4" inputmode="numeric">
+    <input type="text" id="cp-pin" name="diary-cp-pin" autocomplete="off" maxlength="4" inputmode="numeric">
     <div class="err" id="cp-err" style="display:none;"></div>
     <button class="btn btn-primary" onclick="submitChangePass()">Save Changes</button>
   </div>
@@ -575,8 +575,17 @@ async function loadAll(){
   try{ const r = await window.storage.get('diary-settings', false); if(r) settings = JSON.parse(r.value); }
   catch(e){ /* no settings yet = first run */ }
 }
+async function saveSession(){
+  try{ await window.storage.set('diary-session', JSON.stringify({ unlocked, screen: lastScreen }), false); }
+  catch(e){ /* non-critical */ }
+}
+async function loadSession(){
+  try{ const r = await window.storage.get('diary-session', false); return r ? JSON.parse(r.value) : null; }
+  catch(e){ return null; }
+}
 
 /* ---------------- Screen navigation ---------------- */
+let lastScreen = 'home';
 function openScreen(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
@@ -589,6 +598,7 @@ function openScreen(name){
   if(name==='calendar') renderCalendar();
   if(name==='stats') renderStats();
   if(name==='settings') renderSettings();
+  if(['home','calendar','search','stats','settings'].includes(name)){ lastScreen = name; saveSession(); }
 }
 function goStep(name){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('screen-'+name).classList.add('active'); }
 
@@ -607,6 +617,7 @@ function requestLogout(){
   closeDrawer();
   if(!confirm('Logout of My Secret Diary? Your entries stay safely saved.')) return;
   unlocked = false;
+  saveSession();
   document.getElementById('lock-name').textContent = settings.name ? (', '+settings.name) : '';
   document.getElementById('quick-unlock-btn').style.display = settings.quickUnlock ? 'block':'none';
   document.getElementById('nav-bar').style.display='none';
@@ -669,6 +680,15 @@ function spawnParticles(){
 async function boot(){
   spawnParticles();
   await loadAll();
+  const session = await loadSession();
+  if(settings.passHash && session && session.unlocked){
+    // Already unlocked in a previous visit — skip the long splash, resume where they left off.
+    unlocked = true;
+    document.body.setAttribute('data-theme', settings.dark ? 'dark':'light');
+    document.body.setAttribute('data-accent', settings.accent||'lavender');
+    setTimeout(()=>{ openScreen(session.screen || 'home'); }, 400);
+    return;
+  }
   setTimeout(()=>{
     if(!settings.passHash){
       goStep('welcome');
@@ -1130,7 +1150,8 @@ async function confirmDeleteAll(){
   if(!confirm('Really sure? This cannot be undone.')) return;
   entries = [];
   settings = { name:'', avatar:'📔', photo:null, accent:'lavender', dark:false, passHash:null, pin:null, phone:null, quickUnlock:false, memberSince:null };
-  await saveEntries(); await saveSettings();
+  unlocked = false;
+  await saveEntries(); await saveSettings(); await saveSession();
   document.body.setAttribute('data-theme','light');
   document.body.setAttribute('data-accent','lavender');
   document.getElementById('in-name').value=''; document.getElementById('in-pass').value=''; document.getElementById('in-pass2').value=''; document.getElementById('in-pin').value='';
