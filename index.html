@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Secret Diary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<!-- STEP 1: Replace ca-pub-XXXXXXXXXXXXXXXX below with YOUR AdSense publisher ID once you have one -->
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+<style>
+  :root{
+    --cream:#FBF3E7;
+    --paper:#FFFBF5;
+    --paper-line:#EFE2CE;
+    --lavender:#B7A6D9;
+    --lavender-deep:#9280BE;
+    --pink:#EFC3D2;
+    --pink-deep:#DE9CB2;
+    --rose:#C98A9B;
+    --brown:#5B4636;
+    --brown-soft:#8B6F5C;
+    --gold:#C9A24B;
+    --accent:#B7A6D9;
+    --accent-deep:#9280BE;
+    --shadow: 0 10px 30px rgba(91,70,54,0.12);
+    --radius: 22px;
+    --ok:#8FAE8B;
+    --danger:#C97C6B;
+  }
+  [data-theme="dark"]{
+    --cream:#241E2C;
+    --paper:#2E2738;
+    --paper-line:#3C3348;
+    --brown:#EFE6F5;
+    --brown-soft:#C6B8D6;
+    --shadow: 0 10px 30px rgba(0,0,0,0.35);
+  }
+  [data-accent="pink"]{ --accent:#DE9CB2; --accent-deep:#C97A93; }
+  [data-accent="lavender"]{ --accent:#B7A6D9; --accent-deep:#9280BE; }
+  [data-accent="sage"]{ --accent:#9FB59A; --accent-deep:#7E9C79; }
+  [data-accent="peach"]{ --accent:#E8B48C; --accent-deep:#D6935F; }
+
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Quicksand',sans-serif;
+    background:
+      radial-gradient(circle at 15% 10%, rgba(183,166,217,0.14), transparent 40%),
+      radial-gradient(circle at 85% 90%, rgba(239,195,210,0.16), transparent 45%),
+      var(--cream);
+    color:var(--brown);
+    min-height:100vh;
+    overflow-x:hidden;
+    transition:background .4s ease, color .4s ease;
+  }
+  .handwritten{ font-family:'Caveat',cursive; }
+  .serif{ font-family:'Lora',serif; }
+  #app{ max-width:520px; margin:0 auto; min-height:100vh; position:relative; padding-bottom:10px;}
+  .screen{ display:none; padding:20px 18px 100px; min-height:100vh; animation:fadeIn .45s ease; }
+  .screen.active{ display:block; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ---------- Splash ---------- */
+  #screen-splash{
+    position:fixed; inset:0; width:100%; height:100vh; padding:0 !important; margin:0;
+    text-align:center; overflow:hidden; z-index:100; background:var(--cream);
+    display:none;
+  }
+  #screen-splash.active{
+    display:flex; align-items:center; justify-content:center; flex-direction:column;
+  }
+  .splash-book{ font-size:72px; animation:bookFloat 2.6s ease-in-out infinite; filter:drop-shadow(0 12px 18px rgba(91,70,54,0.25)); }
+  @keyframes bookFloat{ 0%,100%{transform:translateY(0) rotate(-2deg);} 50%{transform:translateY(-10px) rotate(2deg);} }
+  .splash-title{ font-size:42px; margin-top:6px; color:var(--brown); }
+  .splash-sub{ font-size:14px; color:var(--brown-soft); letter-spacing:2px; text-transform:uppercase; margin-top:-4px;}
+  .particle{ position:absolute; pointer-events:none; opacity:.8; animation:floatUp linear infinite; }
+  @keyframes floatUp{ from{ transform:translateY(0) scale(1); opacity:.9;} to{ transform:translateY(-120vh) scale(.6); opacity:0;} }
+  .splash-loader{ margin-top:28px; width:140px; height:6px; background:var(--paper-line); border-radius:10px; overflow:hidden;}
+  .splash-loader-bar{ height:100%; width:0%; background:linear-gradient(90deg,var(--lavender),var(--pink)); border-radius:10px; animation:loadBar 3.1s ease forwards; }
+  @keyframes loadBar{ to{width:100%;} }
+
+  /* ---------- Shared components ---------- */
+  .card{ background:var(--paper); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; border:1px solid var(--paper-line); position:relative; }
+  .btn{ font-family:'Quicksand',sans-serif; font-weight:700; border:none; border-radius:16px; padding:14px 18px; cursor:pointer; font-size:15px; transition:transform .15s ease, box-shadow .15s ease; }
+  .btn:active{ transform:scale(.97); }
+  .btn-primary{ background:linear-gradient(135deg,var(--accent),var(--accent-deep)); color:#fff; box-shadow:0 8px 18px rgba(146,128,190,0.35); width:100%; }
+  .btn-ghost{ background:transparent; color:var(--brown-soft); border:2px solid var(--paper-line); width:100%; }
+  .btn-small{ padding:9px 14px; font-size:13px; border-radius:12px; }
+  input[type=text], input[type=password], input[type=date], input[type=number], textarea, select{
+    width:100%; font-family:'Quicksand',sans-serif; font-size:15px; padding:13px 14px; border-radius:14px;
+    border:2px solid var(--paper-line); background:var(--paper); color:var(--brown); outline:none; margin-bottom:12px;
+  }
+  input:focus, textarea:focus, select:focus{ border-color:var(--accent); }
+  label.field-label{ font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--brown-soft); font-weight:700; margin-bottom:6px; display:block; }
+  .center{ text-align:center; }
+  .muted{ color:var(--brown-soft); }
+  .row{ display:flex; gap:10px; }
+  .row > *{ flex:1; }
+  .top-bar{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+  .icon-btn{ background:var(--paper); border:1px solid var(--paper-line); width:42px; height:42px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer; box-shadow:0 3px 8px rgba(91,70,54,.08); }
+  .icon-btn:active{ transform:scale(.94); }
+  .ribbon{ position:absolute; top:-2px; right:22px; width:22px; height:38px; background:var(--accent); border-radius:0 0 6px 6px; box-shadow:0 3px 6px rgba(0,0,0,.15); }
+  .ribbon::after{ content:''; position:absolute; bottom:-9px; left:0; border-width:9px 11px 0 11px; border-style:solid; border-color:var(--accent) transparent transparent transparent; }
+  .fab{ position:fixed; bottom:26px; left:50%; transform:translateX(-50%); width:60px; height:60px; border-radius:50%; background:linear-gradient(135deg,var(--accent),var(--accent-deep)); color:#fff; font-size:28px; border:none; box-shadow:0 10px 24px rgba(146,128,190,.45); cursor:pointer; z-index:40; display:flex; align-items:center; justify-content:center;}
+  .fab:active{ transform:translateX(-50%) scale(.94); }
+  .nav-bar{ position:fixed; bottom:0; left:0; right:0; background:var(--paper); border-top:1px solid var(--paper-line); max-width:520px; margin:0 auto; display:flex; justify-content:space-around; padding:10px 6px 12px; z-index:35; }
+  .nav-item{ background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11px; color:var(--brown-soft); cursor:pointer; font-family:'Quicksand',sans-serif; font-weight:600; }
+  .nav-item span.ic{ font-size:19px; }
+  .nav-item.active{ color:var(--accent-deep); }
+  .chip{ display:inline-flex; align-items:center; gap:6px; background:var(--cream); border:1px solid var(--paper-line); padding:7px 12px; border-radius:20px; font-size:13px; margin:3px 4px 3px 0; }
+  .chip button{ background:none; border:none; cursor:pointer; color:var(--brown-soft); font-size:13px; }
+  .mood-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-bottom:14px; }
+  .mood-opt{ background:var(--cream); border:2px solid var(--paper-line); border-radius:16px; padding:10px 4px; text-align:center; cursor:pointer; font-size:22px; }
+  .mood-opt.selected{ border-color:var(--accent-deep); background:var(--pink); }
+  .mood-opt .lbl{ display:block; font-size:9px; margin-top:3px; color:var(--brown-soft); font-weight:700; }
+  .entry-card{ background:var(--paper); border-radius:18px; padding:16px; margin-bottom:12px; box-shadow:0 4px 14px rgba(91,70,54,.08); border:1px solid var(--paper-line); cursor:pointer; }
+  .entry-card:active{ transform:scale(.99); }
+  .entry-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+  .entry-title{ font-weight:700; font-size:16px; }
+  .entry-date{ font-size:11px; color:var(--brown-soft); font-weight:700; }
+  .entry-snip{ font-size:13px; color:var(--brown-soft); margin-top:6px; line-height:1.5; }
+  .tag-sm{ display:inline-block; font-size:10px; background:var(--cream); padding:3px 8px; border-radius:10px; margin-top:8px; margin-right:5px; color:var(--brown-soft); font-weight:700; }
+  .toolbar{ display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px; background:var(--cream); padding:8px; border-radius:14px; }
+  .toolbar button{ background:var(--paper); border:1px solid var(--paper-line); border-radius:9px; padding:7px 10px; cursor:pointer; font-size:14px; }
+  .editor{ min-height:220px; background:var(--paper); border:2px solid var(--paper-line); border-radius:14px; padding:14px; font-family:'Lora',serif; font-size:15px; line-height:1.7; margin-bottom:14px; }
+  .editor:focus{ outline:none; border-color:var(--accent); }
+  .thumb-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .thumb{ width:64px; height:64px; border-radius:12px; object-fit:cover; border:2px solid var(--paper-line); }
+  .thumb-wrap{ position:relative; }
+  .thumb-remove{ position:absolute; top:-6px; right:-6px; background:var(--danger); color:#fff; border:none; width:20px; height:20px; border-radius:50%; font-size:11px; cursor:pointer; }
+  .modal-bg{ position:fixed; inset:0; background:rgba(91,70,54,.35); display:none; align-items:flex-end; justify-content:center; z-index:60; }
+  .modal-bg.active{ display:flex; }
+  .modal-sheet{ background:var(--paper); width:100%; max-width:520px; border-radius:26px 26px 0 0; padding:22px 20px 30px; max-height:82vh; overflow-y:auto; animation:slideUp .3s ease; }
+  @keyframes slideUp{ from{ transform:translateY(30px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
+  .cal-grid{ display:grid; grid-template-columns:repeat(7,1fr); gap:6px; text-align:center; }
+  .cal-day-lbl{ font-size:10px; color:var(--brown-soft); font-weight:700; padding-bottom:4px; }
+  .cal-cell{ aspect-ratio:1; border-radius:12px; display:flex; flex-direction:column; align-items:center; justify-content:center; font-size:13px; cursor:pointer; background:var(--cream); position:relative; }
+  .cal-cell.today{ border:2px solid var(--accent-deep); font-weight:800; }
+  .cal-cell.empty{ visibility:hidden; }
+  .cal-dot{ width:5px; height:5px; border-radius:50%; background:var(--accent-deep); position:absolute; bottom:6px; }
+  .stat-box{ background:var(--paper); border-radius:16px; padding:14px; text-align:center; border:1px solid var(--paper-line); }
+  .stat-num{ font-size:26px; font-weight:800; color:var(--accent-deep); font-family:'Caveat',cursive; }
+  .stat-lbl{ font-size:10px; text-transform:uppercase; letter-spacing:.5px; color:var(--brown-soft); font-weight:700; }
+  .bar-row{ display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:13px; }
+  .bar-track{ flex:1; height:10px; background:var(--cream); border-radius:6px; overflow:hidden; }
+  .bar-fill{ height:100%; background:linear-gradient(90deg,var(--lavender),var(--pink)); border-radius:6px; }
+  .lock-emoji{ font-size:60px; animation:pulseLock 2s ease-in-out infinite; }
+  @keyframes pulseLock{ 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
+  .switch{ position:relative; width:46px; height:26px; }
+  .switch input{ opacity:0; width:0; height:0; }
+  .slider{ position:absolute; cursor:pointer; inset:0; background:var(--paper-line); border-radius:20px; transition:.3s; }
+  .slider:before{ content:''; position:absolute; height:20px; width:20px; left:3px; top:3px; background:#fff; border-radius:50%; transition:.3s; }
+  input:checked + .slider{ background:var(--accent-deep); }
+  input:checked + .slider:before{ transform:translateX(20px); }
+  .swatch-row{ display:flex; gap:10px; margin-bottom:16px; }
+  .swatch{ width:34px; height:34px; border-radius:50%; cursor:pointer; border:3px solid transparent; }
+  .swatch.selected{ border-color:var(--brown); }
+  .avatar-grid{ display:grid; grid-template-columns:repeat(6,1fr); gap:8px; margin-bottom:16px; }
+  .profile-pic-wrap{ position:relative; width:92px; height:92px; margin:0 auto 14px; }
+  .profile-pic-circle{ width:92px; height:92px; border-radius:50%; background:var(--cream); border:3px solid var(--paper-line); display:flex; align-items:center; justify-content:center; font-size:40px; overflow:hidden; }
+  .profile-pic-circle img{ width:100%; height:100%; object-fit:cover; }
+  .profile-pic-badge{ position:absolute; bottom:0; right:0; width:30px; height:30px; border-radius:50%; background:var(--accent-deep); color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; border:2px solid var(--paper); cursor:pointer; }
+  .profile-pic-badge:active{ transform:scale(.92); }
+  .profile-pic-remove{ position:absolute; top:0; left:0; width:24px; height:24px; border-radius:50%; background:var(--danger); color:#fff; border:2px solid var(--paper); font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .home-avatar-mini{ width:40px; height:40px; border-radius:50%; overflow:hidden; border:2px solid var(--paper-line); display:flex; align-items:center; justify-content:center; font-size:19px; background:var(--cream); cursor:pointer; flex-shrink:0; }
+  .home-avatar-mini img{ width:100%; height:100%; object-fit:cover; }
+  .ad-slot{ background:var(--paper); border:1px dashed var(--paper-line); border-radius:16px; padding:10px; margin-bottom:16px; min-height:90px; display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden; }
+  .ad-slot-label{ font-size:9px; text-transform:uppercase; letter-spacing:1px; color:var(--brown-soft); font-weight:700; align-self:flex-start; margin-bottom:6px; }
+  .drawer-overlay{ position:fixed; inset:0; background:rgba(91,70,54,.35); z-index:70; opacity:0; pointer-events:none; transition:opacity .3s ease; }
+  .drawer-overlay.active{ opacity:1; pointer-events:auto; }
+  .side-drawer{ position:fixed; top:0; left:0; bottom:0; width:78%; max-width:300px; background:var(--paper); z-index:75; padding:26px 18px; box-shadow:8px 0 30px rgba(0,0,0,.2); transform:translateX(-105%); transition:transform .32s ease; overflow-y:auto; }
+  .side-drawer.active{ transform:translateX(0); }
+  .drawer-item{ display:block; width:100%; text-align:left; background:none; border:none; padding:13px 8px; font-family:'Quicksand',sans-serif; font-weight:600; font-size:15px; color:var(--brown); cursor:pointer; border-radius:12px; }
+  .drawer-item:active{ background:var(--cream); }
+  .avatar-opt{ font-size:24px; text-align:center; padding:8px 0; border-radius:12px; cursor:pointer; border:2px solid transparent; background:var(--cream); }
+  .avatar-opt.selected{ border-color:var(--accent-deep); }
+  .empty-state{ text-align:center; padding:40px 10px; color:var(--brown-soft); }
+  .toast{ position:fixed; bottom:100px; left:50%; transform:translateX(-50%); background:var(--brown); color:var(--cream); padding:10px 18px; border-radius:14px; font-size:13px; z-index:80; opacity:0; transition:opacity .3s ease; pointer-events:none; }
+  .toast.show{ opacity:1; }
+  .err{ color:var(--danger); font-size:12px; margin:-6px 0 10px; font-weight:700; }
+  .step-dots{ display:flex; gap:6px; justify-content:center; margin-bottom:20px; }
+  .step-dots span{ width:7px; height:7px; border-radius:50%; background:var(--paper-line); }
+  .step-dots span.on{ background:var(--accent-deep); width:20px; border-radius:5px; transition:.3s; }
+  @media print{
+    body *{ visibility:hidden; }
+    #print-area, #print-area *{ visibility:visible; }
+    #print-area{ position:absolute; top:0; left:0; width:100%; }
+  }
+</style>
+</head>
+<body data-theme="light" data-accent="lavender">
+<div id="app">
+
+  <!-- SPLASH -->
+  <div class="screen active" id="screen-splash">
+    <div id="particles"></div>
+    <div class="splash-book">📖</div>
+    <div class="splash-title handwritten">My Secret Diary</div>
+    <div class="splash-sub">✨ your quiet little world ✨</div>
+    <div class="splash-loader"><div class="splash-loader-bar"></div></div>
+  </div>
+
+  <!-- WELCOME -->
+  <div class="screen" id="screen-welcome">
+    <div style="min-height:80vh; display:flex; flex-direction:column; justify-content:center;">
+      <div class="center" style="margin-bottom:26px;">
+        <div style="font-size:54px;">📔💗</div>
+        <div class="handwritten" style="font-size:34px;">Welcome, friend</div>
+        <p class="muted serif">A cozy, private place for your thoughts, moods, and little moments — just for you.</p>
+      </div>
+      <button class="btn btn-primary" onclick="goStep('create')">Get Started</button>
+    </div>
+  </div>
+
+  <!-- CREATE ACCOUNT -->
+  <div class="screen" id="screen-create">
+    <div class="step-dots"><span class="on"></span><span></span></div>
+    <div class="center" style="margin-bottom:18px;">
+      <div style="font-size:38px;">🔐</div>
+      <div class="handwritten" style="font-size:28px;">Secure your diary</div>
+      <p class="muted" style="font-size:13px;">This stays on your account only — no one else can read it.</p>
+    </div>
+    <label class="field-label">Your name</label>
+    <input type="text" id="in-name" placeholder="What should we call you?">
+    <label class="field-label">Password</label>
+    <input type="password" id="in-pass" placeholder="Create a password">
+    <label class="field-label">Confirm password</label>
+    <input type="password" id="in-pass2" placeholder="Type it again">
+    <label class="field-label">4-digit PIN (optional, quicker unlock)</label>
+    <input type="text" id="in-pin" maxlength="4" inputmode="numeric" placeholder="e.g. 2408">
+    <label class="field-label">Phone number (used only if you forget your password)</label>
+    <input type="text" id="in-phone" inputmode="tel" placeholder="e.g. 9876543210">
+    <div class="err" id="create-err" style="display:none;"></div>
+    <button class="btn btn-primary" onclick="submitCreate()">Continue</button>
+  </div>
+
+  <!-- PROFILE SETUP -->
+  <div class="screen" id="screen-profile">
+    <div class="step-dots"><span class="on"></span><span class="on"></span></div>
+    <div class="center" style="margin-bottom:16px;">
+      <div class="handwritten" style="font-size:28px;">Pick your look</div>
+      <p class="muted" style="font-size:13px;">You can change this anytime in Settings.</p>
+    </div>
+    <div id="profile-pic-preview-profile"></div>
+    <input type="file" id="profile-photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(event,'profile')">
+    <p class="muted center" style="font-size:12px; margin-top:-8px;">Tap the camera to upload your own photo</p>
+    <label class="field-label">Or pick an avatar</label>
+    <div class="avatar-grid" id="avatar-grid"></div>
+    <label class="field-label">Accent color</label>
+    <div class="swatch-row" id="swatch-row-setup"></div>
+    <button class="btn btn-primary" onclick="finishProfile()">Enter My Diary 📖</button>
+  </div>
+
+  <!-- LOCK SCREEN -->
+  <div class="screen" id="screen-lock">
+    <div style="min-height:82vh; display:flex; flex-direction:column; justify-content:center;" class="center">
+      <div class="lock-emoji">🔒</div>
+      <div class="handwritten" style="font-size:30px;">Welcome back<span id="lock-name"></span></div>
+      <p class="muted" style="font-size:13px; margin-bottom:20px;">Unlock to continue your story</p>
+      <input type="password" id="lock-input" placeholder="Password or PIN" style="text-align:center;">
+      <div class="err" id="lock-err" style="display:none;"></div>
+      <button class="btn btn-primary" onclick="tryUnlock()">Unlock</button>
+      <button class="btn btn-ghost" style="margin-top:10px;" id="quick-unlock-btn" onclick="quickUnlock()">✨ Quick Unlock</button>
+      <div class="muted" style="margin-top:16px; font-size:13px; cursor:pointer; text-decoration:underline;" onclick="openForgot()">Forgot password?</div>
+    </div>
+  </div>
+
+  <!-- FORGOT PASSWORD: VERIFY PHONE -->
+  <div class="screen" id="screen-forgot">
+    <div style="min-height:82vh; display:flex; flex-direction:column; justify-content:center;">
+      <div class="center" style="margin-bottom:18px;">
+        <div style="font-size:38px;">📱</div>
+        <div class="handwritten" style="font-size:28px;">Verify it's you</div>
+        <p class="muted" style="font-size:13px;">Enter the phone number you signed up with.</p>
+      </div>
+      <input type="text" id="forgot-phone" inputmode="tel" placeholder="Your phone number" style="text-align:center;">
+      <div class="err" id="forgot-err" style="display:none;"></div>
+      <button class="btn btn-primary" onclick="verifyForgotPhone()">Verify</button>
+      <button class="btn btn-ghost" style="margin-top:10px;" onclick="openScreenRaw('lock')">Back to Unlock</button>
+    </div>
+  </div>
+
+  <!-- FORGOT PASSWORD: SET NEW -->
+  <div class="screen" id="screen-reset">
+    <div style="min-height:82vh; display:flex; flex-direction:column; justify-content:center;">
+      <div class="center" style="margin-bottom:18px;">
+        <div style="font-size:38px;">🔑</div>
+        <div class="handwritten" style="font-size:28px;">Set a new password</div>
+      </div>
+      <label class="field-label">New password</label>
+      <input type="password" id="reset-pass">
+      <label class="field-label">Confirm new password</label>
+      <input type="password" id="reset-pass2">
+      <label class="field-label">New 4-digit PIN (optional)</label>
+      <input type="text" id="reset-pin" maxlength="4" inputmode="numeric">
+      <div class="err" id="reset-err" style="display:none;"></div>
+      <button class="btn btn-primary" onclick="submitReset()">Save & Unlock</button>
+    </div>
+  </div>
+
+  <!-- HOME -->
+  <div class="screen" id="screen-home">
+    <div class="top-bar">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <div class="home-avatar-mini" id="home-avatar-mini" onclick="openScreen('settings')"></div>
+        <div>
+          <div class="muted" style="font-size:12px;" id="home-date"></div>
+          <div class="handwritten" style="font-size:30px; margin-top:-4px;" id="home-greeting"></div>
+        </div>
+      </div>
+      <div class="icon-btn" onclick="openDrawer()">☰</div>
+    </div>
+    <div class="card" style="margin-bottom:16px;">
+      <div class="ribbon"></div>
+      <div class="muted" style="font-size:11px; text-transform:uppercase; letter-spacing:1px; font-weight:700;">Quote of the day</div>
+      <div class="serif" style="font-size:15px; margin-top:6px; font-style:italic;" id="home-quote"></div>
+    </div>
+    <div class="row" style="margin-bottom:16px;">
+      <button class="btn btn-ghost" onclick="openMoodPicker()">💛 How do you feel?</button>
+    </div>
+
+    <!-- STEP 2: Ad slot — replace data-ad-slot value with your real AdSense ad unit ID -->
+    <div class="ad-slot">
+      <div class="ad-slot-label">Advertisement</div>
+      <ins class="adsbygoogle"
+           style="display:block"
+           data-ad-client="ca-pub-XXXXXXXXXXXXXXXX"
+           data-ad-slot="0000000000"
+           data-ad-format="auto"
+           data-full-width-responsive="true"></ins>
+    </div>
+
+    <input type="text" id="home-search" placeholder="🔍 Search your entries..." onkeyup="if(event.key==='Enter')runSearchFromHome()">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:18px 0 10px;">
+      <div class="handwritten" style="font-size:22px;">Recent Entries</div>
+      <div class="muted" style="font-size:12px; cursor:pointer;" onclick="openScreen('calendar')">View calendar ›</div>
+    </div>
+    <div id="home-entries"></div>
+  </div>
+
+  <!-- ENTRY EDITOR -->
+  <div class="screen" id="screen-entry">
+    <div class="top-bar">
+      <div class="icon-btn" onclick="closeEntry()">←</div>
+      <div class="handwritten" style="font-size:22px;" id="entry-heading">New Entry</div>
+      <div class="icon-btn" onclick="saveEntry()">✓</div>
+    </div>
+    <input type="date" id="entry-date">
+    <input type="text" id="entry-title" placeholder="Give this moment a title...">
+    <label class="field-label">Mood</label>
+    <div class="mood-grid" id="entry-mood-grid"></div>
+    <div class="toolbar">
+      <button onclick="fmt('bold')"><b>B</b></button>
+      <button onclick="fmt('italic')"><i>I</i></button>
+      <button onclick="fmt('underline')"><u>U</u></button>
+      <button onclick="fmt('formatBlock','H3')">H</button>
+      <button onclick="fmt('insertUnorderedList')">• List</button>
+      <button onclick="insertChecklist()">☑ Check</button>
+      <button onclick="fmt('backColor','#F3E3B8')">✎ Highlight</button>
+      <button onclick="fmt('formatBlock','BLOCKQUOTE')">❝ Quote</button>
+      <button onclick="insertLink()">🔗 Link</button>
+    </div>
+    <div class="editor" id="entry-editor" contenteditable="true" placeholder="Dear diary..."></div>
+    <label class="field-label">Tags</label>
+    <input type="text" id="entry-tag-input" placeholder="Type a tag and press Enter">
+    <div id="entry-tags"></div>
+    <label class="field-label">Photos</label>
+    <input type="file" id="entry-photo-input" accept="image/*" onchange="addPhoto(event)">
+    <div class="thumb-row" id="entry-photos"></div>
+    <button class="btn btn-primary" onclick="saveEntry()" style="margin-top:8px;">Save Entry 💾</button>
+    <button class="btn btn-ghost" id="entry-delete-btn" style="margin-top:10px; color:var(--danger); display:none;" onclick="deleteCurrentEntry()">Delete this entry</button>
+  </div>
+
+  <!-- CALENDAR -->
+  <div class="screen" id="screen-calendar">
+    <div class="top-bar">
+      <div class="icon-btn" onclick="openScreen('home')">←</div>
+      <div class="handwritten" style="font-size:24px;" id="cal-month-label"></div>
+      <div class="icon-btn" onclick="calNav(1)">›</div>
+    </div>
+    <div style="text-align:right; margin-bottom:8px;"><span class="icon-btn" style="display:inline-flex;" onclick="calNav(-1)">‹</span></div>
+    <div class="cal-grid" id="cal-day-labels"></div>
+    <div class="cal-grid" id="cal-grid" style="margin-top:6px;"></div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="screen" id="screen-search">
+    <div class="top-bar">
+      <div class="icon-btn" onclick="openScreen('home')">←</div>
+      <div class="handwritten" style="font-size:24px;">Search</div>
+      <div style="width:42px;"></div>
+    </div>
+    <input type="text" id="search-input" placeholder="Search title, text, tag, mood..." onkeyup="runSearch()">
+    <div id="search-results"></div>
+  </div>
+
+  <!-- STATS -->
+  <div class="screen" id="screen-stats">
+    <div class="top-bar">
+      <div class="icon-btn" onclick="openScreen('home')">←</div>
+      <div class="handwritten" style="font-size:24px;">Your Story So Far</div>
+      <div style="width:42px;"></div>
+    </div>
+    <div class="row" style="margin-bottom:12px;">
+      <div class="stat-box"><div class="stat-num" id="stat-total">0</div><div class="stat-lbl">Entries</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-streak">0</div><div class="stat-lbl">Streak</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-longest">0</div><div class="stat-lbl">Best Streak</div></div>
+    </div>
+    <div class="row" style="margin-bottom:18px;">
+      <div class="stat-box"><div class="stat-num" id="stat-month">0</div><div class="stat-lbl">This Month</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-words">0</div><div class="stat-lbl">Words Written</div></div>
+      <div class="stat-box"><div class="stat-num" id="stat-fav">–</div><div class="stat-lbl">Favorite Mood</div></div>
+    </div>
+    <div class="card">
+      <div class="handwritten" style="font-size:20px; margin-bottom:10px;">Mood Breakdown</div>
+      <div id="mood-bars"></div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="screen-settings">
+    <div class="top-bar">
+      <div class="icon-btn" onclick="openScreen('home')">←</div>
+      <div class="handwritten" style="font-size:24px;">Settings</div>
+      <div style="width:42px;"></div>
+    </div>
+    <div class="card center" style="margin-bottom:16px;">
+      <div id="profile-pic-preview-settings"></div>
+      <input type="file" id="settings-photo-input" accept="image/*" style="display:none" onchange="handlePhotoUpload(event,'settings')">
+      <div style="font-weight:700; margin-top:8px;" id="settings-name-preview"></div>
+      <div class="muted" style="font-size:12px;" id="settings-member-since"></div>
+    </div>
+    <label class="field-label">Display name</label>
+    <input type="text" id="set-name">
+    <label class="field-label">Or pick an avatar</label>
+    <div class="avatar-grid" id="settings-avatar-grid"></div>
+    <label class="field-label">Accent color</label>
+    <div class="swatch-row" id="swatch-row-settings"></div>
+    <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <div>🌙 Dark Mode</div>
+      <label class="switch"><input type="checkbox" id="toggle-dark" onchange="toggleDark()"><span class="slider"></span></label>
+    </div>
+    <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div>✨ Quick Unlock</div>
+      <label class="switch"><input type="checkbox" id="toggle-quick" onchange="toggleQuick()"><span class="slider"></span></label>
+    </div>
+    <button class="btn btn-ghost" onclick="openScreen('changepass')">🔑 Change Password / PIN</button>
+    <div style="height:10px;"></div>
+    <button class="btn btn-ghost" onclick="exportTxt()">📄 Export as TXT</button>
+    <div style="height:10px;"></div>
+    <button class="btn btn-ghost" onclick="exportPrint()">🖨️ Export / Print as PDF</button>
+    <div style="height:20px;"></div>
+    <button class="btn btn-ghost" onclick="requestLogout()">🚪 Logout</button>
+    <div style="height:10px;"></div>
+    <button class="btn btn-ghost" style="color:var(--danger); border-color:var(--danger);" onclick="confirmDeleteAll()">🗑️ Delete All Data</button>
+    <div style="height:20px;"></div>
+    <div style="text-align:center; font-size:11px;" class="muted">Runs entirely in your browser. Not a substitute for bank-grade encryption — please don't store anything highly sensitive here.</div>
+  </div>
+
+  <!-- CHANGE PASSWORD -->
+  <div class="screen" id="screen-changepass">
+    <div class="top-bar">
+      <div class="icon-btn" onclick="openScreen('settings')">←</div>
+      <div class="handwritten" style="font-size:24px;">Change Lock</div>
+      <div style="width:42px;"></div>
+    </div>
+    <label class="field-label">Current password</label>
+    <input type="password" id="cp-old">
+    <label class="field-label">New password</label>
+    <input type="password" id="cp-new">
+    <label class="field-label">Confirm new password</label>
+    <input type="password" id="cp-new2">
+    <label class="field-label">New 4-digit PIN (optional)</label>
+    <input type="text" id="cp-pin" maxlength="4" inputmode="numeric">
+    <div class="err" id="cp-err" style="display:none;"></div>
+    <button class="btn btn-primary" onclick="submitChangePass()">Save Changes</button>
+  </div>
+
+  <div class="nav-bar" id="nav-bar" style="display:none;">
+    <button class="nav-item" onclick="openScreen('home')" data-nav="home"><span class="ic">🏠</span>Home</button>
+    <button class="nav-item" onclick="openScreen('calendar')" data-nav="calendar"><span class="ic">📅</span>Calendar</button>
+    <button class="nav-item" onclick="openScreen('search')" data-nav="search"><span class="ic">🔍</span>Search</button>
+    <button class="nav-item" onclick="openScreen('stats')" data-nav="stats"><span class="ic">📊</span>Stats</button>
+  </div>
+  <button class="fab" id="fab-add" style="display:none;" onclick="openNewEntry()">+</button>
+
+</div>
+
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="side-drawer" id="side-drawer">
+  <div class="center" style="margin-bottom:22px;">
+    <div id="drawer-avatar" style="width:64px; height:64px; border-radius:50%; margin:0 auto 8px; background:var(--cream); border:2px solid var(--paper-line); display:flex; align-items:center; justify-content:center; font-size:30px; overflow:hidden;"></div>
+    <div style="font-weight:700;" id="drawer-name"></div>
+  </div>
+  <button class="drawer-item" onclick="closeDrawer(); openScreen('settings');">⚙️ Edit Profile & Appearance</button>
+  <button class="drawer-item" onclick="closeDrawer(); openScreen('changepass');">🔑 Change Password / PIN</button>
+  <button class="drawer-item" onclick="closeDrawer(); openScreen('calendar');">📅 Calendar</button>
+  <button class="drawer-item" onclick="closeDrawer(); openScreen('stats');">📊 Stats</button>
+  <div style="height:14px;"></div>
+  <button class="drawer-item" onclick="requestLogout()">🚪 Logout</button>
+  <button class="drawer-item" style="color:var(--danger);" onclick="closeDrawer(); confirmDeleteAll();">🗑️ Delete All Data</button>
+</div>
+
+<div class="modal-bg" id="mood-modal-bg" onclick="if(event.target===this)closeMoodPicker()">
+  <div class="modal-sheet">
+    <div class="handwritten" style="font-size:22px; margin-bottom:10px;">How are you feeling?</div>
+    <div class="mood-grid" id="mood-picker-grid"></div>
+  </div>
+</div>
+
+<div class="modal-bg" id="day-modal-bg" onclick="if(event.target===this)closeDayModal()">
+  <div class="modal-sheet">
+    <div class="handwritten" style="font-size:22px; margin-bottom:10px;" id="day-modal-title"></div>
+    <div id="day-modal-list"></div>
+    <button class="btn btn-primary" style="margin-top:10px;" onclick="newEntryForDay()">+ New entry for this day</button>
+  </div>
+</div>
+
+<div id="print-area" style="display:none;"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- Data & Storage ---------------- */
+const MOODS = [
+  {k:'happy',e:'😊',l:'Happy'},{k:'sad',e:'😢',l:'Sad'},{k:'loved',e:'😍',l:'Loved'},
+  {k:'awesome',e:'😎',l:'Awesome'},{k:'sleepy',e:'😴',l:'Sleepy'},{k:'angry',e:'😡',l:'Angry'},
+  {k:'crying',e:'😭',l:'Crying'},{k:'blessed',e:'🥰',l:'Blessed'},{k:'stressed',e:'😰',l:'Stressed'},{k:'excited',e:'🤩',l:'Excited'}
+];
+const AVATARS = ['📔','🐣','🌷','🦋','🌙','🍄','🐇','🍑','🌸','🧸','🍯','⭐'];
+const ACCENTS = ['lavender','pink','sage','peach'];
+const QUOTES = [
+  "Fill your paper with the breathings of your heart.",
+  "Write what disturbs you, what you fear, what you have not been willing to speak about.",
+  "A diary is an assassin's tool aimed at oneself, and turned inward.",
+  "The story of your life is not your life. It is your story.",
+  "Little by little, one travels far — one page at a time.",
+  "Your feelings are valid. Let them exist on the page.",
+  "Today's small moment might be tomorrow's favorite memory.",
+  "Be gentle with yourself, you're doing the best you can.",
+  "Every page is a chance to breathe out.",
+  "The quietest voice in the room is often the truest one — yours."
+];
+
+let entries = [];
+let settings = { name:'', avatar:'📔', photo:null, accent:'lavender', dark:false, passHash:null, pin:null, phone:null, quickUnlock:false, memberSince:null };
+let currentEntryId = null;
+let selectedMood = null;
+let selectedTags = [];
+let selectedPhotos = [];
+let calCursor = new Date();
+let unlocked = false;
+
+function simpleHash(str){
+  let h = 5381;
+  for(let i=0;i<str.length;i++){ h = ((h << 5) + h) + str.charCodeAt(i); h |= 0; }
+  return 'h'+Math.abs(h).toString(36)+str.length;
+}
+function todayStr(d){ const x=d||new Date(); return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0'); }
+function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
+
+async function saveEntries(){
+  try{ await window.storage.set('diary-entries', JSON.stringify(entries), false); }
+  catch(e){ console.error('save entries failed', e); showToast('Could not save — try again'); }
+}
+async function saveSettings(){
+  try{ await window.storage.set('diary-settings', JSON.stringify(settings), false); }
+  catch(e){ console.error('save settings failed', e); }
+}
+async function loadAll(){
+  try{ const r = await window.storage.get('diary-entries', false); entries = r ? JSON.parse(r.value) : []; }
+  catch(e){ entries = []; }
+  try{ const r = await window.storage.get('diary-settings', false); if(r) settings = JSON.parse(r.value); }
+  catch(e){ /* no settings yet = first run */ }
+}
+
+/* ---------------- Screen navigation ---------------- */
+function openScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  const showChrome = ['home','calendar','search','stats'].includes(name);
+  document.getElementById('nav-bar').style.display = showChrome ? 'flex':'none';
+  document.getElementById('fab-add').style.display = showChrome ? 'flex':'none';
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.nav===name));
+  window.scrollTo(0,0);
+  if(name==='home') renderHome();
+  if(name==='calendar') renderCalendar();
+  if(name==='stats') renderStats();
+  if(name==='settings') renderSettings();
+}
+function goStep(name){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById('screen-'+name).classList.add('active'); }
+
+/* ---------------- Side Drawer ---------------- */
+function openDrawer(){
+  document.getElementById('drawer-avatar').innerHTML = settings.photo ? ('<img src="'+settings.photo+'" style="width:100%;height:100%;object-fit:cover;">') : (settings.avatar||'📔');
+  document.getElementById('drawer-name').textContent = settings.name||'';
+  document.getElementById('side-drawer').classList.add('active');
+  document.getElementById('drawer-overlay').classList.add('active');
+}
+function closeDrawer(){
+  document.getElementById('side-drawer').classList.remove('active');
+  document.getElementById('drawer-overlay').classList.remove('active');
+}
+function requestLogout(){
+  closeDrawer();
+  if(!confirm('Logout of My Secret Diary? Your entries stay safely saved.')) return;
+  unlocked = false;
+  document.getElementById('lock-name').textContent = settings.name ? (', '+settings.name) : '';
+  document.getElementById('quick-unlock-btn').style.display = settings.quickUnlock ? 'block':'none';
+  document.getElementById('nav-bar').style.display='none';
+  document.getElementById('fab-add').style.display='none';
+  goStep('lock');
+}
+
+/* ---------------- Forgot password (via phone) ---------------- */
+function openForgot(){
+  document.getElementById('forgot-phone').value='';
+  document.getElementById('forgot-err').style.display='none';
+  openScreenRaw('forgot');
+}
+function verifyForgotPhone(){
+  const val = document.getElementById('forgot-phone').value.trim();
+  const err = document.getElementById('forgot-err');
+  if(!settings.phone){ err.textContent="No phone number was saved for this account, so we can't verify you this way."; err.style.display='block'; return; }
+  if(!val || val !== settings.phone){ err.textContent='That phone number doesn\'t match our records.'; err.style.display='block'; return; }
+  err.style.display='none';
+  document.getElementById('reset-pass').value=''; document.getElementById('reset-pass2').value=''; document.getElementById('reset-pin').value='';
+  document.getElementById('reset-err').style.display='none';
+  openScreenRaw('reset');
+}
+async function submitReset(){
+  const p1 = document.getElementById('reset-pass').value;
+  const p2 = document.getElementById('reset-pass2').value;
+  const pin = document.getElementById('reset-pin').value.trim();
+  const err = document.getElementById('reset-err');
+  if(p1.length<4){ err.textContent='Password should be at least 4 characters.'; err.style.display='block'; return; }
+  if(p1!==p2){ err.textContent="Passwords don't match."; err.style.display='block'; return; }
+  if(pin && !/^\d{4}$/.test(pin)){ err.textContent='PIN must be exactly 4 digits.'; err.style.display='block'; return; }
+  err.style.display='none';
+  settings.passHash = simpleHash(p1);
+  if(pin) settings.pin = simpleHash(pin);
+  await saveSettings();
+  unlocked = true;
+  showToast('Password reset — welcome back 💗');
+  document.body.setAttribute('data-theme', settings.dark ? 'dark':'light');
+  document.body.setAttribute('data-accent', settings.accent||'lavender');
+  openScreen('home');
+}
+
+/* ---------------- Particles + Splash ---------------- */
+function spawnParticles(){
+  const box = document.getElementById('particles');
+  const bits = ['✨','⭐','🤍','🌸'];
+  for(let i=0;i<16;i++){
+    const p = document.createElement('div');
+    p.className='particle';
+    p.textContent = bits[Math.floor(Math.random()*bits.length)];
+    p.style.left = Math.random()*100+'%';
+    p.style.bottom = '-20px';
+    p.style.fontSize = (10+Math.random()*14)+'px';
+    p.style.animationDuration = (3+Math.random()*3)+'s';
+    p.style.animationDelay = (Math.random()*2)+'s';
+    box.appendChild(p);
+  }
+}
+
+async function boot(){
+  spawnParticles();
+  await loadAll();
+  setTimeout(()=>{
+    if(!settings.passHash){
+      goStep('welcome');
+    } else {
+      document.getElementById('lock-name').textContent = settings.name ? (', '+settings.name) : '';
+      document.getElementById('quick-unlock-btn').style.display = settings.quickUnlock ? 'block':'none';
+      goStep('lock');
+    }
+  }, 3200);
+}
+boot();
+
+/* ---------------- Create account flow ---------------- */
+function submitCreate(){
+  const name = document.getElementById('in-name').value.trim();
+  const pass = document.getElementById('in-pass').value;
+  const pass2 = document.getElementById('in-pass2').value;
+  const pin = document.getElementById('in-pin').value.trim();
+  const phone = document.getElementById('in-phone').value.trim();
+  const err = document.getElementById('create-err');
+  if(!name){ err.textContent='Please tell us your name.'; err.style.display='block'; return; }
+  if(pass.length<4){ err.textContent='Password should be at least 4 characters.'; err.style.display='block'; return; }
+  if(pass!==pass2){ err.textContent="Passwords don't match."; err.style.display='block'; return; }
+  if(pin && !/^\d{4}$/.test(pin)){ err.textContent='PIN must be exactly 4 digits.'; err.style.display='block'; return; }
+  err.style.display='none';
+  settings.name = name;
+  settings.passHash = simpleHash(pass);
+  settings.pin = pin ? simpleHash(pin) : null;
+  settings.phone = phone || null;
+  settings.memberSince = new Date().toISOString();
+  renderProfilePicPreview('profile-pic-preview-profile', 'profile');
+  buildAvatarGrid('avatar-grid', settings.avatar, (v)=>{ settings.avatar=v; settings.photo=null; renderProfilePicPreview('profile-pic-preview-profile','profile'); });
+  buildSwatchRow('swatch-row-setup', settings.accent, (v)=>settings.accent=v);
+  goStep('profile');
+}
+function renderProfilePicPreview(containerId, target){
+  const box = document.getElementById(containerId); if(!box) return;
+  box.innerHTML = '';
+  const wrap = document.createElement('div'); wrap.className='profile-pic-wrap';
+  const circle = document.createElement('div'); circle.className='profile-pic-circle';
+  circle.innerHTML = settings.photo ? ('<img src="'+settings.photo+'" alt="Your photo">') : (settings.avatar||'📔');
+  wrap.appendChild(circle);
+  const badge = document.createElement('div'); badge.className='profile-pic-badge'; badge.textContent='📷';
+  badge.onclick = ()=> document.getElementById(target==='profile' ? 'profile-photo-input' : 'settings-photo-input').click();
+  wrap.appendChild(badge);
+  if(settings.photo){
+    const rm = document.createElement('div'); rm.className='profile-pic-remove'; rm.textContent='×';
+    rm.onclick = (e)=>{ e.stopPropagation(); removePhoto(target); };
+    wrap.appendChild(rm);
+  }
+  box.appendChild(wrap);
+}
+function handlePhotoUpload(ev, target){
+  const file = ev.target.files[0]; if(!file) return;
+  if(!file.type.startsWith('image/')){ showToast('Please choose an image file'); ev.target.value=''; return; }
+  if(file.size > 4*1024*1024){ showToast('Photo is a bit large — try one under 4MB'); ev.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = async ()=>{
+    settings.photo = reader.result;
+    renderProfilePicPreview(target==='profile' ? 'profile-pic-preview-profile' : 'profile-pic-preview-settings', target);
+    if(target==='settings'){ await saveSettings(); renderMiniAvatar(); showToast('Profile photo updated 💗'); }
+  };
+  reader.readAsDataURL(file);
+  ev.target.value='';
+}
+async function removePhoto(target){
+  settings.photo = null;
+  renderProfilePicPreview(target==='profile' ? 'profile-pic-preview-profile' : 'profile-pic-preview-settings', target);
+  if(target==='settings'){ await saveSettings(); renderMiniAvatar(); showToast('Photo removed'); }
+}
+function renderMiniAvatar(){
+  const el = document.getElementById('home-avatar-mini'); if(!el) return;
+  el.innerHTML = settings.photo ? ('<img src="'+settings.photo+'" alt="">') : (settings.avatar||'📔');
+}
+function buildAvatarGrid(id, current, onPick){
+  const grid = document.getElementById(id); grid.innerHTML='';
+  AVATARS.forEach(a=>{
+    const d = document.createElement('div');
+    d.className = 'avatar-opt'+(a===current?' selected':'');
+    d.textContent = a;
+    d.onclick = ()=>{ grid.querySelectorAll('.avatar-opt').forEach(x=>x.classList.remove('selected')); d.classList.add('selected'); onPick(a); };
+    grid.appendChild(d);
+  });
+}
+function buildSwatchRow(id, current, onPick){
+  const row = document.getElementById(id); row.innerHTML='';
+  const colors = {lavender:'#B7A6D9', pink:'#DE9CB2', sage:'#9FB59A', peach:'#E8B48C'};
+  ACCENTS.forEach(a=>{
+    const d = document.createElement('div');
+    d.className='swatch'+(a===current?' selected':'');
+    d.style.background = colors[a];
+    d.onclick = ()=>{ row.querySelectorAll('.swatch').forEach(x=>x.classList.remove('selected')); d.classList.add('selected'); onPick(a); document.body.setAttribute('data-accent', a); };
+    row.appendChild(d);
+  });
+}
+async function finishProfile(){
+  document.body.setAttribute('data-accent', settings.accent);
+  await saveSettings();
+  unlocked = true;
+  openScreen('home');
+}
+
+/* ---------------- Lock / Unlock ---------------- */
+function tryUnlock(){
+  const val = document.getElementById('lock-input').value;
+  const err = document.getElementById('lock-err');
+  const h = simpleHash(val);
+  if(h===settings.passHash || (settings.pin && h===settings.pin)){
+    err.style.display='none';
+    document.getElementById('lock-input').value='';
+    unlocked = true;
+    document.body.setAttribute('data-theme', settings.dark ? 'dark':'light');
+    document.body.setAttribute('data-accent', settings.accent||'lavender');
+    openScreen('home');
+  } else {
+    err.textContent="That didn't match. Try again.";
+    err.style.display='block';
+  }
+}
+function quickUnlock(){
+  const btn = document.getElementById('quick-unlock-btn');
+  btn.textContent='🔓 Unlocking...';
+  setTimeout(()=>{
+    unlocked = true;
+    document.body.setAttribute('data-theme', settings.dark ? 'dark':'light');
+    document.body.setAttribute('data-accent', settings.accent||'lavender');
+    openScreen('home');
+    btn.textContent='✨ Quick Unlock';
+  }, 700);
+}
+
+/* ---------------- Home ---------------- */
+let adLoaded = false;
+function loadHomeAd(){
+  if(adLoaded) return;
+  try{
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+    adLoaded = true;
+  }catch(e){ console.log('AdSense not ready yet:', e.message); }
+}
+function renderHome(){
+  const now = new Date();
+  document.getElementById('home-date').textContent = now.toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+  const h = now.getHours();
+  const greet = h<12?'Good morning':(h<18?'Good afternoon':'Good evening');
+  document.getElementById('home-greeting').textContent = greet + (settings.name?', '+settings.name:'');
+  renderMiniAvatar();
+  loadHomeAd();
+  const dayIdx = Math.floor((now - new Date(now.getFullYear(),0,0)) / 86400000) % QUOTES.length;
+  document.getElementById('home-quote').textContent = '"'+QUOTES[dayIdx]+'"';
+  const list = [...entries].sort((a,b)=> b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)).slice(0,5);
+  const box = document.getElementById('home-entries'); box.innerHTML='';
+  if(list.length===0){
+    box.innerHTML = "<div class=\"empty-state\">🌱<br>Your story hasn't started yet.<br>Tap + to write your first entry.</div>";
+    return;
+  }
+  list.forEach(e=> box.appendChild(entryCard(e)));
+}
+function entryCard(e){
+  const mood = MOODS.find(m=>m.k===e.mood);
+  const div = document.createElement('div');
+  div.className='entry-card';
+  div.onclick = ()=>openEntryForEdit(e.id);
+  const snippet = (e.content||'').replace(/<[^>]*>/g,' ').trim().slice(0,90);
+  div.innerHTML = `<div class="entry-top">
+      <div><div class="entry-title">${mood?mood.e+' ':''}${escapeHtml(e.title||'Untitled')}</div></div>
+      <div class="entry-date">${e.date}</div>
+    </div>
+    <div class="entry-snip">${escapeHtml(snippet)}${snippet.length>=90?'…':''}</div>
+    ${(e.tags||[]).slice(0,4).map(t=>'<span class="tag-sm">#'+escapeHtml(t)+'</span>').join('')}`;
+  return div;
+}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent=s||''; return d.innerHTML; }
+function runSearchFromHome(){
+  const v = document.getElementById('home-search').value;
+  openScreen('search');
+  document.getElementById('search-input').value = v;
+  runSearch();
+}
+
+/* ---------------- Mood picker (home) ---------------- */
+function openMoodPicker(){
+  const grid = document.getElementById('mood-picker-grid'); grid.innerHTML='';
+  MOODS.forEach(m=>{
+    const d = document.createElement('div');
+    d.className='mood-opt';
+    d.innerHTML = m.e+'<span class="lbl">'+m.l+'</span>';
+    d.onclick = ()=>{ closeMoodPicker(); openNewEntry(); setTimeout(()=>selectMood(m.k),50); };
+    grid.appendChild(d);
+  });
+  document.getElementById('mood-modal-bg').classList.add('active');
+}
+function closeMoodPicker(){ document.getElementById('mood-modal-bg').classList.remove('active'); }
+
+/* ---------------- Entry editor ---------------- */
+function buildMoodGrid(){
+  const grid = document.getElementById('entry-mood-grid'); grid.innerHTML='';
+  MOODS.forEach(m=>{
+    const d = document.createElement('div');
+    d.className='mood-opt'+(selectedMood===m.k?' selected':'');
+    d.innerHTML = m.e+'<span class="lbl">'+m.l+'</span>';
+    d.onclick = ()=>selectMood(m.k);
+    grid.appendChild(d);
+  });
+}
+function selectMood(k){ selectedMood=k; buildMoodGrid(); }
+function openNewEntry(){
+  currentEntryId = null;
+  selectedMood = null; selectedTags = []; selectedPhotos = [];
+  document.getElementById('entry-heading').textContent='New Entry';
+  document.getElementById('entry-date').value = todayStr();
+  document.getElementById('entry-title').value='';
+  document.getElementById('entry-editor').innerHTML='';
+  document.getElementById('entry-delete-btn').style.display='none';
+  buildMoodGrid(); renderTags(); renderPhotos();
+  openScreenRaw('entry');
+}
+function openEntryForEdit(id){
+  const e = entries.find(x=>x.id===id); if(!e) return;
+  currentEntryId = id;
+  selectedMood = e.mood; selectedTags = [...(e.tags||[])]; selectedPhotos = [...(e.photos||[])];
+  document.getElementById('entry-heading').textContent='Edit Entry';
+  document.getElementById('entry-date').value = e.date;
+  document.getElementById('entry-title').value = e.title||'';
+  document.getElementById('entry-editor').innerHTML = e.content||'';
+  document.getElementById('entry-delete-btn').style.display='block';
+  buildMoodGrid(); renderTags(); renderPhotos();
+  openScreenRaw('entry');
+}
+function openScreenRaw(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  document.getElementById('nav-bar').style.display='none';
+  document.getElementById('fab-add').style.display='none';
+  window.scrollTo(0,0);
+}
+function closeEntry(){ openScreen('home'); }
+function fmt(cmd, val){ document.getElementById('entry-editor').focus(); document.execCommand(cmd, false, val||null); }
+function insertChecklist(){ document.execCommand('insertHTML', false, '☐ '); }
+function insertLink(){ const url = prompt('Paste a link:'); if(url) fmt('createLink', url); }
+document.getElementById('entry-tag-input').addEventListener('keydown', function(ev){
+  if(ev.key==='Enter'){ ev.preventDefault(); const v=this.value.trim().replace(/^#/,''); if(v && !selectedTags.includes(v)){ selectedTags.push(v); renderTags(); } this.value=''; }
+});
+function renderTags(){
+  const box = document.getElementById('entry-tags'); box.innerHTML='';
+  selectedTags.forEach(t=>{
+    const c = document.createElement('span'); c.className='chip';
+    c.innerHTML = '#'+escapeHtml(t)+' <button onclick="removeTag(\''+t.replace(/'/g,"")+'\')">×</button>';
+    box.appendChild(c);
+  });
+}
+function removeTag(t){ selectedTags = selectedTags.filter(x=>x!==t); renderTags(); }
+function addPhoto(ev){
+  const file = ev.target.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = ()=>{ selectedPhotos.push(reader.result); renderPhotos(); };
+  reader.readAsDataURL(file);
+  ev.target.value='';
+}
+function renderPhotos(){
+  const box = document.getElementById('entry-photos'); box.innerHTML='';
+  selectedPhotos.forEach((p,i)=>{
+    const w = document.createElement('div'); w.className='thumb-wrap';
+    w.innerHTML = '<img class="thumb" src="'+p+'"><button class="thumb-remove" onclick="removePhoto('+i+')">×</button>';
+    box.appendChild(w);
+  });
+}
+function removePhoto(i){ selectedPhotos.splice(i,1); renderPhotos(); }
+async function saveEntry(){
+  const date = document.getElementById('entry-date').value || todayStr();
+  const title = document.getElementById('entry-title').value.trim();
+  const content = document.getElementById('entry-editor').innerHTML;
+  const now = new Date().toISOString();
+  if(currentEntryId){
+    const idx = entries.findIndex(e=>e.id===currentEntryId);
+    if(idx>-1){ entries[idx] = {...entries[idx], date, title, content, mood:selectedMood, tags:selectedTags, photos:selectedPhotos, updatedAt:now}; }
+  } else {
+    entries.push({ id:'e'+Date.now(), date, title, content, mood:selectedMood, tags:selectedTags, photos:selectedPhotos, createdAt:now, updatedAt:now });
+  }
+  await saveEntries();
+  showToast('Saved to your diary 💌');
+  openScreen('home');
+}
+async function deleteCurrentEntry(){
+  if(!currentEntryId) return;
+  if(!confirm('Delete this entry? This cannot be undone.')) return;
+  entries = entries.filter(e=>e.id!==currentEntryId);
+  await saveEntries();
+  showToast('Entry deleted');
+  openScreen('home');
+}
+
+/* ---------------- Calendar ---------------- */
+function renderCalendar(){
+  const y = calCursor.getFullYear(), m = calCursor.getMonth();
+  document.getElementById('cal-month-label').textContent = calCursor.toLocaleDateString(undefined,{month:'long', year:'numeric'});
+  const lbls = document.getElementById('cal-day-labels'); lbls.innerHTML='';
+  ['S','M','T','W','T','F','S'].forEach(d=>{ const s=document.createElement('div'); s.className='cal-day-lbl'; s.textContent=d; lbls.appendChild(s); });
+  const grid = document.getElementById('cal-grid'); grid.innerHTML='';
+  const firstDay = new Date(y,m,1).getDay();
+  const daysInMonth = new Date(y,m+1,0).getDate();
+  for(let i=0;i<firstDay;i++){ const e=document.createElement('div'); e.className='cal-cell empty'; grid.appendChild(e); }
+  const todayS = todayStr();
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr = y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const has = entries.some(e=>e.date===dateStr);
+    const cell = document.createElement('div');
+    cell.className='cal-cell'+(dateStr===todayS?' today':'');
+    cell.innerHTML = d + (has?'<span class="cal-dot"></span>':'');
+    cell.onclick = ()=>openDayModal(dateStr);
+    grid.appendChild(cell);
+  }
+}
+function calNav(dir){ calCursor.setMonth(calCursor.getMonth()+dir); renderCalendar(); }
+let dayModalDate = null;
+function openDayModal(dateStr){
+  dayModalDate = dateStr;
+  document.getElementById('day-modal-title').textContent = new Date(dateStr+'T00:00:00').toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
+  const list = entries.filter(e=>e.date===dateStr);
+  const box = document.getElementById('day-modal-list'); box.innerHTML='';
+  if(list.length===0){ box.innerHTML='<div class="muted center" style="padding:14px 0;">No entries yet for this day.</div>'; }
+  list.forEach(e=> box.appendChild(entryCard(e)));
+  document.getElementById('day-modal-bg').classList.add('active');
+}
+function closeDayModal(){ document.getElementById('day-modal-bg').classList.remove('active'); }
+function newEntryForDay(){
+  closeDayModal();
+  openNewEntry();
+  document.getElementById('entry-date').value = dayModalDate;
+}
+
+/* ---------------- Search ---------------- */
+function runSearch(){
+  const q = document.getElementById('search-input').value.trim().toLowerCase();
+  const box = document.getElementById('search-results'); box.innerHTML='';
+  if(!q){ box.innerHTML = '<div class="empty-state">Type to search by title, text, tag, mood, or date.</div>'; return; }
+  const results = entries.filter(e=>{
+    const mood = MOODS.find(m=>m.k===e.mood);
+    const hay = [e.title, e.content.replace(/<[^>]*>/g,' '), (e.tags||[]).join(' '), mood?mood.l:'', e.date].join(' ').toLowerCase();
+    return hay.includes(q);
+  }).sort((a,b)=>b.date.localeCompare(a.date));
+  if(results.length===0){ box.innerHTML = '<div class="empty-state">No entries found for "'+escapeHtml(q)+'".</div>'; return; }
+  results.forEach(e=> box.appendChild(entryCard(e)));
+}
+
+/* ---------------- Stats ---------------- */
+function renderStats(){
+  document.getElementById('stat-total').textContent = entries.length;
+  const now = new Date();
+  const monthCount = entries.filter(e=>e.date.startsWith(todayStr().slice(0,7))).length;
+  document.getElementById('stat-month').textContent = monthCount;
+  const words = entries.reduce((s,e)=> s + (e.content||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length, 0);
+  document.getElementById('stat-words').textContent = words;
+  const dateSet = new Set(entries.map(e=>e.date));
+  let streak = 0; let cur = new Date();
+  while(dateSet.has(todayStr(cur))){ streak++; cur.setDate(cur.getDate()-1); }
+  document.getElementById('stat-streak').textContent = streak;
+  const sortedDates = [...dateSet].sort();
+  let longest=0, run=0, prev=null;
+  sortedDates.forEach(d=>{
+    if(prev){ const diff = (new Date(d) - new Date(prev))/86400000; run = diff===1 ? run+1 : 1; } else run=1;
+    longest = Math.max(longest, run); prev=d;
+  });
+  document.getElementById('stat-longest').textContent = longest;
+  const counts = {};
+  entries.forEach(e=>{ if(e.mood) counts[e.mood]=(counts[e.mood]||0)+1; });
+  const fav = Object.keys(counts).sort((a,b)=>counts[b]-counts[a])[0];
+  const favMood = MOODS.find(m=>m.k===fav);
+  document.getElementById('stat-fav').textContent = favMood ? favMood.e : '–';
+  const barsBox = document.getElementById('mood-bars'); barsBox.innerHTML='';
+  const maxCount = Math.max(1, ...Object.values(counts));
+  MOODS.filter(m=>counts[m.k]).sort((a,b)=>(counts[b.k]||0)-(counts[a.k]||0)).forEach(m=>{
+    const pct = Math.round((counts[m.k]/maxCount)*100);
+    const row = document.createElement('div'); row.className='bar-row';
+    row.innerHTML = `<span>${m.e}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div><span style="width:20px; text-align:right;">${counts[m.k]}</span>`;
+    barsBox.appendChild(row);
+  });
+  if(Object.keys(counts).length===0) barsBox.innerHTML = '<div class="muted">Log a mood to see your breakdown here.</div>';
+}
+
+/* ---------------- Settings ---------------- */
+function renderSettings(){
+  document.getElementById('set-name').value = settings.name||'';
+  renderProfilePicPreview('profile-pic-preview-settings', 'settings');
+  document.getElementById('settings-name-preview').textContent = settings.name||'';
+  document.getElementById('settings-member-since').textContent = settings.memberSince ? ('Member since '+new Date(settings.memberSince).toLocaleDateString(undefined,{month:'short', year:'numeric'})) : '';
+  buildAvatarGrid('settings-avatar-grid', settings.avatar, async (v)=>{ settings.avatar=v; settings.photo=null; await saveSettings(); renderSettings(); });
+  buildSwatchRow('swatch-row-settings', settings.accent, async (v)=>{ settings.accent=v; document.body.setAttribute('data-accent', v); await saveSettings(); });
+  document.getElementById('toggle-dark').checked = !!settings.dark;
+  document.getElementById('toggle-quick').checked = !!settings.quickUnlock;
+}
+document.getElementById('set-name').addEventListener('change', async function(){ settings.name=this.value.trim(); await saveSettings(); renderSettings(); });
+async function toggleDark(){
+  settings.dark = document.getElementById('toggle-dark').checked;
+  document.body.setAttribute('data-theme', settings.dark?'dark':'light');
+  await saveSettings();
+}
+async function toggleQuick(){
+  settings.quickUnlock = document.getElementById('toggle-quick').checked;
+  await saveSettings();
+}
+async function submitChangePass(){
+  const old = document.getElementById('cp-old').value;
+  const n1 = document.getElementById('cp-new').value;
+  const n2 = document.getElementById('cp-new2').value;
+  const pin = document.getElementById('cp-pin').value.trim();
+  const err = document.getElementById('cp-err');
+  if(simpleHash(old)!==settings.passHash){ err.textContent='Current password is incorrect.'; err.style.display='block'; return; }
+  if(n1.length<4){ err.textContent='New password should be at least 4 characters.'; err.style.display='block'; return; }
+  if(n1!==n2){ err.textContent="New passwords don't match."; err.style.display='block'; return; }
+  if(pin && !/^\d{4}$/.test(pin)){ err.textContent='PIN must be exactly 4 digits.'; err.style.display='block'; return; }
+  err.style.display='none';
+  settings.passHash = simpleHash(n1);
+  if(pin) settings.pin = simpleHash(pin);
+  await saveSettings();
+  showToast('Lock updated 🔐');
+  ['cp-old','cp-new','cp-new2','cp-pin'].forEach(id=>document.getElementById(id).value='');
+  openScreen('settings');
+}
+
+/* ---------------- Export / Import / Delete ---------------- */
+function downloadBlob(content, filename, type){
+  const blob = new Blob([content], {type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download=filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+function exportTxt(){
+  const sorted = [...entries].sort((a,b)=>a.date.localeCompare(b.date));
+  let out = 'MY SECRET DIARY\n' + (settings.name?('by '+settings.name+'\n'):'') + '='.repeat(30) + '\n\n';
+  sorted.forEach(e=>{
+    const mood = MOODS.find(m=>m.k===e.mood);
+    out += `${e.date}  ${mood?mood.e+' '+mood.l:''}\n${e.title||'Untitled'}\n${'-'.repeat(20)}\n`;
+    out += e.content.replace(/<br\s*\/?>/gi,'\n').replace(/<[^>]*>/g,'') + '\n';
+    if(e.tags && e.tags.length) out += 'Tags: '+e.tags.map(t=>'#'+t).join(' ')+'\n';
+    out += '\n\n';
+  });
+  downloadBlob(out, 'my-secret-diary.txt', 'text/plain');
+  showToast('Exported as TXT');
+}
+function exportPrint(){
+  const sorted = [...entries].sort((a,b)=>a.date.localeCompare(b.date));
+  let html = '<h1 style="font-family:serif;">My Secret Diary</h1>';
+  sorted.forEach(e=>{
+    const mood = MOODS.find(m=>m.k===e.mood);
+    html += `<div style="margin-bottom:24px; page-break-inside:avoid;">
+      <div style="font-size:12px;color:#888;">${e.date} ${mood?mood.e+' '+mood.l:''}</div>
+      <h3 style="margin:4px 0;">${escapeHtml(e.title||'Untitled')}</h3>
+      <div style="font-family:serif; font-size:14px; line-height:1.6;">${e.content}</div>
+      ${(e.tags||[]).length?'<div style="font-size:11px;color:#888;">Tags: '+e.tags.map(t=>'#'+t).join(' ')+'</div>':''}
+    </div>`;
+  });
+  document.getElementById('print-area').innerHTML = html;
+  window.print();
+}
+async function confirmDeleteAll(){
+  if(!confirm('This will permanently delete ALL diary entries and reset your account. Are you absolutely sure?')) return;
+  if(!confirm('Really sure? This cannot be undone.')) return;
+  entries = [];
+  settings = { name:'', avatar:'📔', photo:null, accent:'lavender', dark:false, passHash:null, pin:null, phone:null, quickUnlock:false, memberSince:null };
+  await saveEntries(); await saveSettings();
+  document.body.setAttribute('data-theme','light');
+  document.body.setAttribute('data-accent','lavender');
+  document.getElementById('in-name').value=''; document.getElementById('in-pass').value=''; document.getElementById('in-pass2').value=''; document.getElementById('in-pin').value='';
+  goStep('welcome');
+}
+</script>
+</body>
+</html>
