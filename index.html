@@ -382,6 +382,23 @@
     <button class="btn btn-ghost" id="entry-delete-btn" style="margin-top:10px; color:var(--danger); display:none;" onclick="deleteCurrentEntry()">Delete this entry</button>
   </div>
 
+  <!-- VIEW ENTRY (read-only) -->
+  <div class="screen" id="screen-view">
+    <div class="top-bar">
+      <div class="icon-btn" onclick="openScreen('home')">←</div>
+      <div class="handwritten" style="font-size:22px;" id="view-heading">Entry</div>
+      <div class="icon-btn" onclick="openEntryForEdit(currentEntryId)">✏️</div>
+    </div>
+    <div class="muted" id="view-date" style="text-align:center; margin-bottom:4px;"></div>
+    <div id="view-title" class="handwritten" style="font-size:26px; text-align:center; margin-bottom:10px;"></div>
+    <div id="view-mood" style="text-align:center; font-size:28px; margin-bottom:14px;"></div>
+    <div id="view-content" style="line-height:1.7; padding:4px 2px;"></div>
+    <div id="view-tags" style="margin-top:14px;"></div>
+    <div class="thumb-row" id="view-photos" style="margin-top:14px;"></div>
+    <button class="btn btn-primary" style="margin-top:20px;" onclick="openEntryForEdit(currentEntryId)">✏️ Edit this entry</button>
+    <button class="btn btn-ghost" style="margin-top:10px; color:var(--danger);" onclick="deleteCurrentEntry()">Delete this entry</button>
+  </div>
+
   <!-- CALENDAR -->
   <div class="screen" id="screen-calendar">
     <div class="top-bar">
@@ -532,6 +549,16 @@
 <div id="print-area" style="display:none;"></div>
 <div class="toast" id="toast"></div>
 
+<!-- CUSTOM CONFIRM MODAL (replaces native confirm() which is unreliable inside the packaged Android app) -->
+<div class="modal-bg" id="confirm-modal-bg" onclick="if(event.target===this)closeCustomConfirm(false)">
+  <div class="modal-sheet">
+    <div class="handwritten" style="font-size:22px; margin-bottom:8px;" id="confirm-modal-title">Are you sure?</div>
+    <div class="muted" style="margin-bottom:18px;" id="confirm-modal-msg"></div>
+    <button class="btn btn-primary" id="confirm-modal-ok" style="color:var(--danger); border-color:var(--danger);">Yes, continue</button>
+    <button class="btn btn-ghost" style="margin-top:8px;" onclick="closeCustomConfirm(false)">Cancel</button>
+  </div>
+</div>
+
 <script>
 /* ---------------- Data & Storage ---------------- */
 const MOODS = [
@@ -572,25 +599,25 @@ function todayStr(d){ const x=d||new Date(); return x.getFullYear()+'-'+String(x
 function showToast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2000); }
 
 async function saveEntries(){
-  try{ await window.storage.set('diary-entries', JSON.stringify(entries), false); }
+  try{ localStorage.setItem('diary-entries', JSON.stringify(entries)); }
   catch(e){ console.error('save entries failed', e); showToast('Could not save — try again'); }
 }
 async function saveSettings(){
-  try{ await window.storage.set('diary-settings', JSON.stringify(settings), false); }
+  try{ localStorage.setItem('diary-settings', JSON.stringify(settings)); }
   catch(e){ console.error('save settings failed', e); }
 }
 async function loadAll(){
-  try{ const r = await window.storage.get('diary-entries', false); entries = r ? JSON.parse(r.value) : []; }
+  try{ const v = localStorage.getItem('diary-entries'); entries = v ? JSON.parse(v) : []; }
   catch(e){ entries = []; }
-  try{ const r = await window.storage.get('diary-settings', false); if(r) settings = JSON.parse(r.value); }
+  try{ const v = localStorage.getItem('diary-settings'); if(v) settings = JSON.parse(v); }
   catch(e){ /* no settings yet = first run */ }
 }
 async function saveSession(){
-  try{ await window.storage.set('diary-session', JSON.stringify({ unlocked, screen: lastScreen }), false); }
+  try{ localStorage.setItem('diary-session', JSON.stringify({ unlocked, screen: lastScreen })); }
   catch(e){ /* non-critical */ }
 }
 async function loadSession(){
-  try{ const r = await window.storage.get('diary-session', false); return r ? JSON.parse(r.value) : null; }
+  try{ const v = localStorage.getItem('diary-session'); return v ? JSON.parse(v) : null; }
   catch(e){ return null; }
 }
 
@@ -623,16 +650,34 @@ function closeDrawer(){
   document.getElementById('side-drawer').classList.remove('active');
   document.getElementById('drawer-overlay').classList.remove('active');
 }
+/* ---------------- Custom confirm (replaces native confirm() — unreliable inside packaged Android app) ---------------- */
+let _confirmResolve = null;
+function customConfirm(message, title){
+  return new Promise((resolve)=>{
+    _confirmResolve = resolve;
+    document.getElementById('confirm-modal-title').textContent = title || 'Are you sure?';
+    document.getElementById('confirm-modal-msg').textContent = message;
+    document.getElementById('confirm-modal-bg').classList.add('active');
+  });
+}
+function closeCustomConfirm(result){
+  document.getElementById('confirm-modal-bg').classList.remove('active');
+  if(_confirmResolve){ _confirmResolve(result); _confirmResolve = null; }
+}
+document.getElementById('confirm-modal-ok').onclick = ()=>closeCustomConfirm(true);
+
 function requestLogout(){
   closeDrawer();
-  if(!confirm('Logout of My Secret Diary? Your entries stay safely saved.')) return;
-  unlocked = false;
-  saveSession();
-  document.getElementById('lock-name').textContent = settings.name ? (', '+settings.name) : '';
-  document.getElementById('quick-unlock-btn').style.display = settings.quickUnlock ? 'block':'none';
-  document.getElementById('nav-bar').style.display='none';
-  document.getElementById('fab-add').style.display='none';
-  goStep('lock');
+  customConfirm('Your entries stay safely saved.', 'Logout of My Secret Diary?').then((ok)=>{
+    if(!ok) return;
+    unlocked = false;
+    saveSession();
+    document.getElementById('lock-name').textContent = settings.name ? (', '+settings.name) : '';
+    document.getElementById('quick-unlock-btn').style.display = settings.quickUnlock ? 'block':'none';
+    document.getElementById('nav-bar').style.display='none';
+    document.getElementById('fab-add').style.display='none';
+    goStep('lock');
+  });
 }
 
 /* ---------------- Forgot password (via phone) ---------------- */
@@ -861,7 +906,7 @@ function entryCard(e){
   const mood = MOODS.find(m=>m.k===e.mood);
   const div = document.createElement('div');
   div.className='entry-card';
-  div.onclick = ()=>openEntryForEdit(e.id);
+  div.onclick = ()=>openEntryForView(e.id);
   const snippet = (e.content||'').replace(/<[^>]*>/g,' ').trim().slice(0,90);
   div.innerHTML = `<div class="entry-top">
       <div><div class="entry-title">${mood?mood.e+' ':''}${escapeHtml(e.title||'Untitled')}</div></div>
@@ -928,6 +973,28 @@ function openEntryForEdit(id){
   buildMoodGrid(); renderTags(); renderPhotos();
   openScreenRaw('entry');
 }
+function openEntryForView(id){
+  const e = entries.find(x=>x.id===id); if(!e) return;
+  currentEntryId = id;
+  const mood = MOODS.find(m=>m.k===e.mood);
+  document.getElementById('view-heading').textContent = e.title || 'Entry';
+  document.getElementById('view-date').textContent = e.date;
+  document.getElementById('view-title').textContent = e.title || 'Untitled';
+  document.getElementById('view-mood').textContent = mood ? (mood.e+' '+mood.l) : '';
+  document.getElementById('view-content').innerHTML = e.content || '<span class="muted">No content</span>';
+  const tagBox = document.getElementById('view-tags'); tagBox.innerHTML='';
+  (e.tags||[]).forEach(t=>{
+    const c = document.createElement('span'); c.className='chip'; c.textContent = '#'+t;
+    tagBox.appendChild(c);
+  });
+  const photoBox = document.getElementById('view-photos'); photoBox.innerHTML='';
+  (e.photos||[]).forEach(p=>{
+    const w = document.createElement('div'); w.className='thumb-wrap';
+    w.innerHTML = '<img class="thumb" src="'+p+'">';
+    photoBox.appendChild(w);
+  });
+  openScreenRaw('view');
+}
 function openScreenRaw(name){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('screen-'+name).classList.add('active');
@@ -984,7 +1051,8 @@ async function saveEntry(){
 }
 async function deleteCurrentEntry(){
   if(!currentEntryId) return;
-  if(!confirm('Delete this entry? This cannot be undone.')) return;
+  const ok = await customConfirm('This cannot be undone.', 'Delete this entry?');
+  if(!ok) return;
   entries = entries.filter(e=>e.id!==currentEntryId);
   await saveEntries();
   showToast('Entry deleted');
@@ -1156,8 +1224,10 @@ function exportPrint(){
   window.print();
 }
 async function confirmDeleteAll(){
-  if(!confirm('This will permanently delete ALL diary entries and reset your account. Are you absolutely sure?')) return;
-  if(!confirm('Really sure? This cannot be undone.')) return;
+  const ok1 = await customConfirm('This will permanently delete ALL diary entries and reset your account.', 'Are you absolutely sure?');
+  if(!ok1) return;
+  const ok2 = await customConfirm('This cannot be undone.', 'Really sure?');
+  if(!ok2) return;
   entries = [];
   settings = { name:'', avatar:'📔', photo:null, accent:'lavender', dark:false, passHash:null, pin:null, phone:null, quickUnlock:false, memberSince:null };
   unlocked = false;
