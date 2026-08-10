@@ -15,8 +15,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-<!-- STEP 1: Replace ca-pub-XXXXXXXXXXXXXXXX below with YOUR AdSense publisher ID once you have one -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5281749706312648" crossorigin="anonymous"></script>
 <style>
   :root{
     --cream:#FBF3E7;
@@ -330,15 +328,10 @@
       <button class="btn btn-ghost" onclick="openMoodPicker()">💛 How do you feel?</button>
     </div>
 
-    <!-- STEP 2: Ad slot — replace data-ad-slot value with your real AdSense ad unit ID -->
-    <div class="ad-slot">
-      <div class="ad-slot-label">Advertisement</div>
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-5281749706312648"
-           data-ad-slot="0000000000"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
+    <div class="ad-slot" style="cursor:pointer;" onclick="window.open('https://razorpay.me/@YOUR_HANDLE_HERE','_blank')">
+      <div class="ad-slot-label">Support this app</div>
+      <div style="font-size:22px;">☕ 💗</div>
+      <div style="font-size:12px; color:var(--brown-soft); text-align:center; padding:0 8px;">Enjoying My Secret Diary? Buy the developer a coffee</div>
     </div>
 
     <input type="text" id="home-search" placeholder="🔍 Search your entries..." onkeyup="if(event.key==='Enter')runSearchFromHome()">
@@ -876,14 +869,6 @@ function quickUnlock(){
 }
 
 /* ---------------- Home ---------------- */
-let adLoaded = false;
-function loadHomeAd(){
-  if(adLoaded) return;
-  try{
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
-    adLoaded = true;
-  }catch(e){ console.log('AdSense not ready yet:', e.message); }
-}
 function renderHome(){
   const now = new Date();
   document.getElementById('home-date').textContent = now.toLocaleDateString(undefined,{weekday:'long', month:'long', day:'numeric'});
@@ -891,7 +876,6 @@ function renderHome(){
   const greet = h<12?'Good morning':(h<18?'Good afternoon':'Good evening');
   document.getElementById('home-greeting').textContent = greet + (settings.name?', '+settings.name:'');
   renderMiniAvatar();
-  loadHomeAd();
   const dayIdx = Math.floor((now - new Date(now.getFullYear(),0,0)) / 86400000) % QUOTES.length;
   document.getElementById('home-quote').textContent = '"'+QUOTES[dayIdx]+'"';
   const list = [...entries].sort((a,b)=> b.date.localeCompare(a.date) || b.createdAt.localeCompare(a.createdAt)).slice(0,5);
