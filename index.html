@@ -269,7 +269,6 @@
       <input type="password" id="lock-input" name="diary-unlock" autocomplete="current-password" placeholder="Password or PIN" style="text-align:center;">
       <div class="err" id="lock-err" style="display:none;"></div>
       <button class="btn btn-primary" onclick="tryUnlock()">Unlock</button>
-      <button class="btn btn-ghost" style="margin-top:10px;" id="quick-unlock-btn" onclick="quickUnlock()">✨ Quick Unlock</button>
       <div class="muted" style="margin-top:16px; font-size:13px; cursor:pointer; text-decoration:underline;" onclick="openForgot()">Forgot password?</div>
     </div>
   </div>
@@ -460,10 +459,6 @@
     <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
       <div>🌙 Dark Mode</div>
       <label class="switch"><input type="checkbox" id="toggle-dark" onchange="toggleDark()"><span class="slider"></span></label>
-    </div>
-    <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-      <div>✨ Quick Unlock</div>
-      <label class="switch"><input type="checkbox" id="toggle-quick" onchange="toggleQuick()"><span class="slider"></span></label>
     </div>
     <button class="btn btn-ghost" onclick="openScreen('changepass')">🔑 Change Password / PIN</button>
     <div style="height:10px;"></div>
@@ -666,7 +661,6 @@ function requestLogout(){
     unlocked = false;
     saveSession();
     document.getElementById('lock-name').textContent = settings.name ? (', '+settings.name) : '';
-    document.getElementById('quick-unlock-btn').style.display = settings.quickUnlock ? 'block':'none';
     document.getElementById('nav-bar').style.display='none';
     document.getElementById('fab-add').style.display='none';
     goStep('lock');
@@ -728,21 +722,12 @@ function spawnParticles(){
 async function boot(){
   spawnParticles();
   await loadAll();
-  const session = await loadSession();
-  if(settings.passHash && session && session.unlocked){
-    // Already unlocked in a previous visit — skip the long splash, resume where they left off.
-    unlocked = true;
-    document.body.setAttribute('data-theme', settings.dark ? 'dark':'light');
-    document.body.setAttribute('data-accent', settings.accent||'lavender');
-    setTimeout(()=>{ openScreen(session.screen || 'home'); }, 400);
-    return;
-  }
+  await loadSession();
   setTimeout(()=>{
     if(!settings.passHash){
       goStep('welcome');
     } else {
       document.getElementById('lock-name').textContent = settings.name ? (', '+settings.name) : '';
-      document.getElementById('quick-unlock-btn').style.display = settings.quickUnlock ? 'block':'none';
       goStep('lock');
     }
   }, 3200);
@@ -855,17 +840,6 @@ function tryUnlock(){
     err.textContent="That didn't match. Try again.";
     err.style.display='block';
   }
-}
-function quickUnlock(){
-  const btn = document.getElementById('quick-unlock-btn');
-  btn.textContent='🔓 Unlocking...';
-  setTimeout(()=>{
-    unlocked = true;
-    document.body.setAttribute('data-theme', settings.dark ? 'dark':'light');
-    document.body.setAttribute('data-accent', settings.accent||'lavender');
-    openScreen('home');
-    btn.textContent='✨ Quick Unlock';
-  }, 700);
 }
 
 /* ---------------- Home ---------------- */
@@ -1140,16 +1114,11 @@ function renderSettings(){
   buildAvatarGrid('settings-avatar-grid', settings.avatar, async (v)=>{ settings.avatar=v; settings.photo=null; await saveSettings(); renderSettings(); });
   buildSwatchRow('swatch-row-settings', settings.accent, async (v)=>{ settings.accent=v; document.body.setAttribute('data-accent', v); await saveSettings(); });
   document.getElementById('toggle-dark').checked = !!settings.dark;
-  document.getElementById('toggle-quick').checked = !!settings.quickUnlock;
 }
 document.getElementById('set-name').addEventListener('change', async function(){ settings.name=this.value.trim(); await saveSettings(); renderSettings(); });
 async function toggleDark(){
   settings.dark = document.getElementById('toggle-dark').checked;
   document.body.setAttribute('data-theme', settings.dark?'dark':'light');
-  await saveSettings();
-}
-async function toggleQuick(){
-  settings.quickUnlock = document.getElementById('toggle-quick').checked;
   await saveSettings();
 }
 async function submitChangePass(){
