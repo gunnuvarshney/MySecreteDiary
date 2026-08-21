@@ -225,20 +225,12 @@
   <div class="screen" id="screen-create">
     <div class="step-dots"><span class="on"></span><span></span></div>
     <div class="center" style="margin-bottom:18px;">
-      <div style="font-size:38px;">🔐</div>
-      <div class="handwritten" style="font-size:28px;">Secure your diary</div>
-      <p class="muted" style="font-size:13px;">This stays on your account only — no one else can read it.</p>
+      <div style="font-size:38px;">📔</div>
+      <div class="handwritten" style="font-size:28px;">Let's set you up</div>
+      <p class="muted" style="font-size:13px;">Just a name to get started — no password needed.</p>
     </div>
     <label class="field-label">Your name</label>
     <input type="text" id="in-name" name="diary-name" autocomplete="off" placeholder="What should we call you?">
-    <label class="field-label">Password</label>
-    <input type="password" id="in-pass" name="diary-new-pass" autocomplete="new-password" placeholder="Create a password">
-    <label class="field-label">Confirm password</label>
-    <input type="password" id="in-pass2" name="diary-new-pass2" autocomplete="new-password" placeholder="Type it again">
-    <label class="field-label">4-digit PIN (optional, quicker unlock)</label>
-    <input type="text" id="in-pin" name="diary-pin" autocomplete="off" maxlength="4" inputmode="numeric" placeholder="e.g. 2408">
-    <label class="field-label">Phone number (used only if you forget your password)</label>
-    <input type="text" id="in-phone" name="diary-phone" autocomplete="off" inputmode="tel" placeholder="e.g. 9876543210">
     <div class="err" id="create-err" style="display:none;"></div>
     <button class="btn btn-primary" onclick="submitCreate()">Continue</button>
   </div>
@@ -258,52 +250,6 @@
     <label class="field-label">Accent color</label>
     <div class="swatch-row" id="swatch-row-setup"></div>
     <button class="btn btn-primary" onclick="finishProfile()">Enter My Diary 📖</button>
-  </div>
-
-  <!-- LOCK SCREEN -->
-  <div class="screen" id="screen-lock">
-    <div style="min-height:82vh; display:flex; flex-direction:column; justify-content:center;" class="center">
-      <div class="lock-emoji">🔒</div>
-      <div class="handwritten" style="font-size:30px;">Welcome back<span id="lock-name"></span></div>
-      <p class="muted" style="font-size:13px; margin-bottom:20px;">Unlock to continue your story</p>
-      <input type="password" id="lock-input" name="diary-unlock" autocomplete="current-password" placeholder="Password or PIN" style="text-align:center;">
-      <div class="err" id="lock-err" style="display:none;"></div>
-      <button class="btn btn-primary" onclick="tryUnlock()">Unlock</button>
-      <div class="muted" style="margin-top:16px; font-size:13px; cursor:pointer; text-decoration:underline;" onclick="openForgot()">Forgot password?</div>
-    </div>
-  </div>
-
-  <!-- FORGOT PASSWORD: VERIFY PHONE -->
-  <div class="screen" id="screen-forgot">
-    <div style="min-height:82vh; display:flex; flex-direction:column; justify-content:center;">
-      <div class="center" style="margin-bottom:18px;">
-        <div style="font-size:38px;">📱</div>
-        <div class="handwritten" style="font-size:28px;">Verify it's you</div>
-        <p class="muted" style="font-size:13px;">Enter the phone number you signed up with.</p>
-      </div>
-      <input type="text" id="forgot-phone" name="diary-forgot-phone" autocomplete="off" inputmode="tel" placeholder="Your phone number" style="text-align:center;">
-      <div class="err" id="forgot-err" style="display:none;"></div>
-      <button class="btn btn-primary" onclick="verifyForgotPhone()">Verify</button>
-      <button class="btn btn-ghost" style="margin-top:10px;" onclick="openScreenRaw('lock')">Back to Unlock</button>
-    </div>
-  </div>
-
-  <!-- FORGOT PASSWORD: SET NEW -->
-  <div class="screen" id="screen-reset">
-    <div style="min-height:82vh; display:flex; flex-direction:column; justify-content:center;">
-      <div class="center" style="margin-bottom:18px;">
-        <div style="font-size:38px;">🔑</div>
-        <div class="handwritten" style="font-size:28px;">Set a new password</div>
-      </div>
-      <label class="field-label">New password</label>
-      <input type="password" id="reset-pass" name="diary-reset-pass" autocomplete="new-password">
-      <label class="field-label">Confirm new password</label>
-      <input type="password" id="reset-pass2" name="diary-reset-pass2" autocomplete="new-password">
-      <label class="field-label">New 4-digit PIN (optional)</label>
-      <input type="text" id="reset-pin" name="diary-reset-pin" autocomplete="off" maxlength="4" inputmode="numeric">
-      <div class="err" id="reset-err" style="display:none;"></div>
-      <button class="btn btn-primary" onclick="submitReset()">Save & Unlock</button>
-    </div>
   </div>
 
   <!-- HOME -->
@@ -333,12 +279,28 @@
       <div style="font-size:12px; color:var(--brown-soft); text-align:center; padding:0 8px;">Enjoying My Secret Diary? Buy the developer a coffee</div>
     </div>
 
+    <!-- ADSTERRA BANNER AD (home screen) -->
+    <div id="adsterra-banner-home" style="margin:14px 0; min-height:250px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+      <script type="text/javascript">
+        atOptions = { 'key' : 'd7d516594cb2525c995c1fdff720220f', 'format' : 'iframe', 'height' : 250, 'width' : 300, 'params' : {} };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/d7d516594cb2525c995c1fdff720220f/invoke.js"></script>
+    </div>
+
     <input type="text" id="home-search" placeholder="🔍 Search your entries..." onkeyup="if(event.key==='Enter')runSearchFromHome()">
     <div style="display:flex; justify-content:space-between; align-items:center; margin:18px 0 10px;">
       <div class="handwritten" style="font-size:22px;">Recent Entries</div>
       <div class="muted" style="font-size:12px; cursor:pointer;" onclick="openScreen('calendar')">View calendar ›</div>
     </div>
     <div id="home-entries"></div>
+
+    <!-- ADSTERRA BANNER AD (below entries) -->
+    <div id="adsterra-banner-home-2" style="margin:16px 0 6px; min-height:50px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+      <script type="text/javascript">
+        atOptions = { 'key' : '0233b2ede1354a604c8bf68f129804cb', 'format' : 'iframe', 'height' : 50, 'width' : 320, 'params' : {} };
+      </script>
+      <script type="text/javascript" src="https://www.highperformanceformat.com/0233b2ede1354a604c8bf68f129804cb/invoke.js"></script>
+    </div>
   </div>
 
   <!-- ENTRY EDITOR -->
@@ -460,38 +422,15 @@
       <div>🌙 Dark Mode</div>
       <label class="switch"><input type="checkbox" id="toggle-dark" onchange="toggleDark()"><span class="slider"></span></label>
     </div>
-    <button class="btn btn-ghost" onclick="openScreen('changepass')">🔑 Change Password / PIN</button>
-    <div style="height:10px;"></div>
     <button class="btn btn-ghost" onclick="exportTxt()">📄 Export as TXT</button>
     <div style="height:10px;"></div>
    <button class="btn btn-ghost" onclick="window.open('/privacy.html','_blank')">🔒 Privacy Policy</button>
     <div style="height:10px;"></div>
     <button class="btn btn-ghost" onclick="exportPrint()">🖨️ Export / Print as PDF</button>
     <div style="height:20px;"></div>
-    <button class="btn btn-ghost" onclick="requestLogout()">🚪 Logout</button>
-    <div style="height:10px;"></div>
     <button class="btn btn-ghost" style="color:var(--danger); border-color:var(--danger);" onclick="confirmDeleteAll()">🗑️ Delete All Data</button>
     <div style="height:20px;"></div>
     <div style="text-align:center; font-size:11px;" class="muted">Runs entirely in your browser. Not a substitute for bank-grade encryption — please don't store anything highly sensitive here.</div>
-  </div>
-
-  <!-- CHANGE PASSWORD -->
-  <div class="screen" id="screen-changepass">
-    <div class="top-bar">
-      <div class="icon-btn" onclick="openScreen('settings')">←</div>
-      <div class="handwritten" style="font-size:24px;">Change Lock</div>
-      <div style="width:42px;"></div>
-    </div>
-    <label class="field-label">Current password</label>
-    <input type="password" id="cp-old" name="diary-cp-old" autocomplete="current-password">
-    <label class="field-label">New password</label>
-    <input type="password" id="cp-new" name="diary-cp-new" autocomplete="new-password">
-    <label class="field-label">Confirm new password</label>
-    <input type="password" id="cp-new2" name="diary-cp-new2" autocomplete="new-password">
-    <label class="field-label">New 4-digit PIN (optional)</label>
-    <input type="text" id="cp-pin" name="diary-cp-pin" autocomplete="off" maxlength="4" inputmode="numeric">
-    <div class="err" id="cp-err" style="display:none;"></div>
-    <button class="btn btn-primary" onclick="submitChangePass()">Save Changes</button>
   </div>
 
   <div class="nav-bar" id="nav-bar" style="display:none;">
@@ -511,11 +450,9 @@
     <div style="font-weight:700;" id="drawer-name"></div>
   </div>
   <button class="drawer-item" onclick="closeDrawer(); openScreen('settings');">⚙️ Edit Profile & Appearance</button>
-  <button class="drawer-item" onclick="closeDrawer(); openScreen('changepass');">🔑 Change Password / PIN</button>
   <button class="drawer-item" onclick="closeDrawer(); openScreen('calendar');">📅 Calendar</button>
   <button class="drawer-item" onclick="closeDrawer(); openScreen('stats');">📊 Stats</button>
   <div style="height:14px;"></div>
-  <button class="drawer-item" onclick="requestLogout()">🚪 Logout</button>
   <button class="drawer-item" style="color:var(--danger);" onclick="closeDrawer(); confirmDeleteAll();">🗑️ Delete All Data</button>
 </div>
 
@@ -570,7 +507,7 @@ const QUOTES = [
 ];
 
 let entries = [];
-let settings = { name:'', avatar:'📔', photo:null, accent:'lavender', dark:false, passHash:null, pin:null, phone:null, quickUnlock:false, memberSince:null };
+let settings = { name:'', avatar:'📔', photo:null, accent:'lavender', dark:false, memberSince:null };
 let currentEntryId = null;
 let selectedMood = null;
 let selectedTags = [];
@@ -654,54 +591,6 @@ function closeCustomConfirm(result){
 }
 document.getElementById('confirm-modal-ok').onclick = ()=>closeCustomConfirm(true);
 
-function requestLogout(){
-  closeDrawer();
-  customConfirm('Your entries stay safely saved.', 'Logout of My Secret Diary?').then((ok)=>{
-    if(!ok) return;
-    unlocked = false;
-    saveSession();
-    document.getElementById('lock-name').textContent = settings.name ? (', '+settings.name) : '';
-    document.getElementById('nav-bar').style.display='none';
-    document.getElementById('fab-add').style.display='none';
-    goStep('lock');
-  });
-}
-
-/* ---------------- Forgot password (via phone) ---------------- */
-function openForgot(){
-  document.getElementById('forgot-phone').value='';
-  document.getElementById('forgot-err').style.display='none';
-  openScreenRaw('forgot');
-}
-function verifyForgotPhone(){
-  const val = document.getElementById('forgot-phone').value.trim();
-  const err = document.getElementById('forgot-err');
-  if(!settings.phone){ err.textContent="No phone number was saved for this account, so we can't verify you this way."; err.style.display='block'; return; }
-  if(!val || val !== settings.phone){ err.textContent='That phone number doesn\'t match our records.'; err.style.display='block'; return; }
-  err.style.display='none';
-  document.getElementById('reset-pass').value=''; document.getElementById('reset-pass2').value=''; document.getElementById('reset-pin').value='';
-  document.getElementById('reset-err').style.display='none';
-  openScreenRaw('reset');
-}
-async function submitReset(){
-  const p1 = document.getElementById('reset-pass').value;
-  const p2 = document.getElementById('reset-pass2').value;
-  const pin = document.getElementById('reset-pin').value.trim();
-  const err = document.getElementById('reset-err');
-  if(p1.length<4){ err.textContent='Password should be at least 4 characters.'; err.style.display='block'; return; }
-  if(p1!==p2){ err.textContent="Passwords don't match."; err.style.display='block'; return; }
-  if(pin && !/^\d{4}$/.test(pin)){ err.textContent='PIN must be exactly 4 digits.'; err.style.display='block'; return; }
-  err.style.display='none';
-  settings.passHash = simpleHash(p1);
-  if(pin) settings.pin = simpleHash(pin);
-  await saveSettings();
-  unlocked = true;
-  showToast('Password reset — welcome back 💗');
-  document.body.setAttribute('data-theme', settings.dark ? 'dark':'light');
-  document.body.setAttribute('data-accent', settings.accent||'lavender');
-  openScreen('home');
-}
-
 /* ---------------- Particles + Splash ---------------- */
 function spawnParticles(){
   const box = document.getElementById('particles');
@@ -724,11 +613,13 @@ async function boot(){
   await loadAll();
   await loadSession();
   setTimeout(()=>{
-    if(!settings.passHash){
+    if(!settings.name){
       goStep('welcome');
     } else {
-      document.getElementById('lock-name').textContent = settings.name ? (', '+settings.name) : '';
-      goStep('lock');
+      unlocked = true;
+      document.body.setAttribute('data-theme', settings.dark ? 'dark':'light');
+      document.body.setAttribute('data-accent', settings.accent||'lavender');
+      openScreen('home');
     }
   }, 3200);
 }
@@ -737,20 +628,10 @@ boot();
 /* ---------------- Create account flow ---------------- */
 function submitCreate(){
   const name = document.getElementById('in-name').value.trim();
-  const pass = document.getElementById('in-pass').value;
-  const pass2 = document.getElementById('in-pass2').value;
-  const pin = document.getElementById('in-pin').value.trim();
-  const phone = document.getElementById('in-phone').value.trim();
   const err = document.getElementById('create-err');
   if(!name){ err.textContent='Please tell us your name.'; err.style.display='block'; return; }
-  if(pass.length<4){ err.textContent='Password should be at least 4 characters.'; err.style.display='block'; return; }
-  if(pass!==pass2){ err.textContent="Passwords don't match."; err.style.display='block'; return; }
-  if(pin && !/^\d{4}$/.test(pin)){ err.textContent='PIN must be exactly 4 digits.'; err.style.display='block'; return; }
   err.style.display='none';
   settings.name = name;
-  settings.passHash = simpleHash(pass);
-  settings.pin = pin ? simpleHash(pin) : null;
-  settings.phone = phone || null;
   settings.memberSince = new Date().toISOString();
   renderProfilePicPreview('profile-pic-preview-profile', 'profile');
   buildAvatarGrid('avatar-grid', settings.avatar, (v)=>{ settings.avatar=v; settings.photo=null; renderProfilePicPreview('profile-pic-preview-profile','profile'); });
@@ -822,24 +703,6 @@ async function finishProfile(){
   await saveSettings();
   unlocked = true;
   openScreen('home');
-}
-
-/* ---------------- Lock / Unlock ---------------- */
-function tryUnlock(){
-  const val = document.getElementById('lock-input').value;
-  const err = document.getElementById('lock-err');
-  const h = simpleHash(val);
-  if(h===settings.passHash || (settings.pin && h===settings.pin)){
-    err.style.display='none';
-    document.getElementById('lock-input').value='';
-    unlocked = true;
-    document.body.setAttribute('data-theme', settings.dark ? 'dark':'light');
-    document.body.setAttribute('data-accent', settings.accent||'lavender');
-    openScreen('home');
-  } else {
-    err.textContent="That didn't match. Try again.";
-    err.style.display='block';
-  }
 }
 
 /* ---------------- Home ---------------- */
@@ -1121,25 +984,6 @@ async function toggleDark(){
   document.body.setAttribute('data-theme', settings.dark?'dark':'light');
   await saveSettings();
 }
-async function submitChangePass(){
-  const old = document.getElementById('cp-old').value;
-  const n1 = document.getElementById('cp-new').value;
-  const n2 = document.getElementById('cp-new2').value;
-  const pin = document.getElementById('cp-pin').value.trim();
-  const err = document.getElementById('cp-err');
-  if(simpleHash(old)!==settings.passHash){ err.textContent='Current password is incorrect.'; err.style.display='block'; return; }
-  if(n1.length<4){ err.textContent='New password should be at least 4 characters.'; err.style.display='block'; return; }
-  if(n1!==n2){ err.textContent="New passwords don't match."; err.style.display='block'; return; }
-  if(pin && !/^\d{4}$/.test(pin)){ err.textContent='PIN must be exactly 4 digits.'; err.style.display='block'; return; }
-  err.style.display='none';
-  settings.passHash = simpleHash(n1);
-  if(pin) settings.pin = simpleHash(pin);
-  await saveSettings();
-  showToast('Lock updated 🔐');
-  ['cp-old','cp-new','cp-new2','cp-pin'].forEach(id=>document.getElementById(id).value='');
-  openScreen('settings');
-}
-
 /* ---------------- Export / Import / Delete ---------------- */
 function downloadBlob(content, filename, type){
   const blob = new Blob([content], {type});
@@ -1182,12 +1026,12 @@ async function confirmDeleteAll(){
   const ok2 = await customConfirm('This cannot be undone.', 'Really sure?');
   if(!ok2) return;
   entries = [];
-  settings = { name:'', avatar:'📔', photo:null, accent:'lavender', dark:false, passHash:null, pin:null, phone:null, quickUnlock:false, memberSince:null };
+  settings = { name:'', avatar:'📔', photo:null, accent:'lavender', dark:false, memberSince:null };
   unlocked = false;
   await saveEntries(); await saveSettings(); await saveSession();
   document.body.setAttribute('data-theme','light');
   document.body.setAttribute('data-accent','lavender');
-  document.getElementById('in-name').value=''; document.getElementById('in-pass').value=''; document.getElementById('in-pass2').value=''; document.getElementById('in-pin').value='';
+  document.getElementById('in-name').value='';
   goStep('welcome');
 }
 </script>
