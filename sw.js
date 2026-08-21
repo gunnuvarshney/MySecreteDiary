@@ -1,4 +1,4 @@
-const CACHE_NAME = 'secret-diary-v5';
+const CACHE_NAME = 'secret-diary-v6';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',
